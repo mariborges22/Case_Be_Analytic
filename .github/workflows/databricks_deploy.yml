@@ -125,14 +125,7 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
       
-      - name: Configure Databricks
-        run: |
-          mkdir -p ~/.databrickscfg
-          cat > ~/.databrickscfg <<EOF
-          [DEFAULT]
-          host = ${{ secrets.DATABRICKS_HOST }}
-          token = ${{ secrets.DATABRICKS_TOKEN }}
-          EOF
+      
       
       - name: Run Bundle Workflow
         run: |
