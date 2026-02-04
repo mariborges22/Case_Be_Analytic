@@ -58,6 +58,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Pre-flight Cleanup
+        run: |
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -152,6 +157,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Pre-flight Cleanup
+        run: |
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -206,6 +216,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Pre-flight Cleanup
+        run: |
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
       
       - name: ⚠️ Destroy Warning
         run: |

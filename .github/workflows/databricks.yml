@@ -143,19 +143,16 @@ jobs:
           path: ./
         continue-on-error: true
       
+      - name: Pre-flight Cleanup
+        run: |
+          # Remove any existing .databrickscfg (file or directory)
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
+      
       - name: Install Databricks CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
           databricks --version
-      
-      - name: Configure Databricks CLI
-        run: |
-          mkdir -p ~/.databrickscfg
-          cat > ~/.databrickscfg <<EOF
-          [DEFAULT]
-          host = ${{ secrets.DATABRICKS_HOST }}
-          token = ${{ secrets.DATABRICKS_TOKEN }}
-          EOF
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
@@ -168,6 +165,9 @@ jobs:
             echo "⚠️  No databricks.yml found - skipping DABs deployment"
             echo "DABs configuration will be added when SUS log engine code is ready"
           fi
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       
       - name: Deploy DABs
         run: |

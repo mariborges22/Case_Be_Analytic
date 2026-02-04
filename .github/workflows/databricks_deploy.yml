@@ -43,19 +43,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Pre-flight Cleanup
+        run: |
+          # Remove any existing .databrickscfg (file or directory)
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
+      
       - name: Install Databricks CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
           databricks --version
-      
-      - name: Configure Databricks
-        run: |
-          mkdir -p ~/.databrickscfg
-          cat > ~/.databrickscfg <<EOF
-          [DEFAULT]
-          host = ${{ secrets.DATABRICKS_HOST }}
-          token = ${{ secrets.DATABRICKS_TOKEN }}
-          EOF
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       
       - name: Validate Bundle
         run: |
@@ -67,6 +67,9 @@ jobs:
             echo "DABs configuration not yet created. This will be added when SUS log engine code is ready." >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
   deploy:
     name: Deploy to Databricks
@@ -77,6 +80,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Pre-flight Cleanup
+        run: |
+          # Remove any existing .databrickscfg (file or directory)
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
       
       - name: Install Databricks CLI
         run: |
@@ -120,6 +129,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Pre-flight Cleanup
+        run: |
+          # Remove any existing .databrickscfg (file or directory)
+          rm -rf ~/.databrickscfg
+          echo "✅ Cleaned up ~/.databrickscfg"
       
       - name: Install Databricks CLI
         run: |
