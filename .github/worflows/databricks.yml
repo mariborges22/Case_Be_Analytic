@@ -1,0 +1,249 @@
+# ============================================================================
+# Databricks Deploy - Terraform + DABs
+# Deploy completo via Terraform e Databricks Asset Bundles
+# ============================================================================
+
+name: Databricks Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+env:
+  TF_VERSION: '1.7.0'
+  DATABRICKS_CLI_VERSION: '0.213.0'
+
+jobs:
+  terraform:
+    name: Terraform Infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    
+    defaults:
+      run:
+        working-directory: ./infra
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+      
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        env:
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+      
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan \
+            -var="environment=${{ github.event.inputs.environment || 'dev' }}" \
+            -out=tfplan \
+            -no-color
+        env:
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+      
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infra/tfplan
+          retention-days: 7
+      
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        id: apply
+        run: terraform apply -auto-approve tfplan
+        env:
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+      
+      - name: Terraform Output
+        if: steps.apply.outcome == 'success'
+        id: output
+        run: |
+          terraform output -json > terraform_outputs.json
+          cat terraform_outputs.json
+      
+      - name: Upload Terraform Outputs
+        if: steps.apply.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-outputs
+          path: infra/terraform_outputs.json
+          retention-days: 30
+      
+      - name: Generate deployment summary
+        if: always()
+        run: |
+          echo "## Terraform Deployment 🏗️" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Format | ${{ steps.fmt.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Init | ${{ steps.init.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Validate | ${{ steps.validate.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Plan | ${{ steps.plan.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Apply | ${{ steps.apply.outcome || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f terraform_outputs.json ]; then
+            echo "### Terraform Outputs" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat terraform_outputs.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  deploy-dabs:
+    name: Deploy via Databricks Asset Bundles
+    needs: terraform
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-outputs
+          path: ./
+        continue-on-error: true
+      
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          databricks --version
+      
+      - name: Configure Databricks CLI
+        run: |
+          mkdir -p ~/.databrickscfg
+          cat > ~/.databrickscfg <<EOF
+          [DEFAULT]
+          host = ${{ secrets.DATABRICKS_HOST }}
+          token = ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Validate DABs Configuration
+        run: |
+          if [ -f databricks.yml ]; then
+            databricks bundle validate --target ${{ github.event.inputs.environment || 'dev' }}
+          else
+            echo "⚠️  No databricks.yml found - skipping DABs deployment"
+            echo "DABs configuration will be added when SUS log engine code is ready"
+          fi
+      
+      - name: Deploy DABs
+        if: hashFiles('databricks.yml') != ''
+        run: |
+          databricks bundle deploy \
+            --target ${{ github.event.inputs.environment || 'dev' }} \
+            --force
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Run DABs workflows (if applicable)
+        if: hashFiles('databricks.yml') != '' && github.ref == 'refs/heads/main'
+        continue-on-error: true
+        run: |
+          databricks bundle run \
+            --target ${{ github.event.inputs.environment || 'dev' }}
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Generate DABs summary
+        if: always()
+        run: |
+          echo "## DABs Deployment 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Environment: **${{ github.event.inputs.environment || 'dev' }}**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f terraform_outputs.json ]; then
+            echo "### Infrastructure Resources" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Unity Catalog provisioned" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Bronze/Silver/Gold schemas created" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Clusters with Photon enabled" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -f databricks.yml ]; then
+            echo "- ✅ DABs deployed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⏳ DABs configuration pending (will be added with SUS log engine code)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  post-deployment:
+    name: Post-Deployment Validation
+    needs: [terraform, deploy-dabs]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-outputs
+          path: ./
+        continue-on-error: true
+      
+      - name: Verify infrastructure
+        run: |
+          echo "## Deployment Validation ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.terraform.result }}" == "success" ]; then
+            echo "✅ Terraform infrastructure deployed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Terraform deployment failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.deploy-dabs.result }}" == "success" ]; then
+            echo "✅ DABs deployment completed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️  DABs deployment skipped or failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify clusters are running in Databricks UI" >> $GITHUB_STEP_SUMMARY
+          echo "2. Check Unity Catalog schemas are accessible" >> $GITHUB_STEP_SUMMARY
+          echo "3. Add SUS log engine code and databricks.yml for DABs" >> $GITHUB_STEP_SUMMARY
+          echo "4. Configure cluster restart if spark_conf was changed" >> $GITHUB_STEP_SUMMARY

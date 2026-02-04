@@ -1,0 +1,192 @@
+# ============================================================================
+# Databricks Asset Bundles (DABs) Deploy
+# Workflow isolado para deploy de código via DABs
+# ============================================================================
+
+name: Deploy Databricks Asset Bundles
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'src/**'
+      - 'databricks.yml'
+      - 'resources/**'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'DABs target environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      run_workflow:
+        description: 'Run workflow after deployment'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  DATABRICKS_CLI_VERSION: '0.213.0'
+
+jobs:
+  validate:
+    name: Validate DABs Configuration
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+          databricks --version
+      
+      - name: Configure Databricks
+        run: |
+          mkdir -p ~/.databrickscfg
+          cat > ~/.databrickscfg <<EOF
+          [DEFAULT]
+          host = ${{ secrets.DATABRICKS_HOST }}
+          token = ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+      
+      - name: Validate Bundle
+        run: |
+          if [ -f databricks.yml ]; then
+            databricks bundle validate --target ${{ github.event.inputs.target || 'dev' }}
+            echo "✅ DABs configuration is valid" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No databricks.yml found" >> $GITHUB_STEP_SUMMARY
+            echo "DABs configuration not yet created. This will be added when SUS log engine code is ready." >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+  deploy:
+    name: Deploy to Databricks
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.target || 'dev' }}
+    if: hashFiles('databricks.yml') != ''
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      
+      - name: Configure Databricks
+        run: |
+          mkdir -p ~/.databrickscfg
+          cat > ~/.databrickscfg <<EOF
+          [DEFAULT]
+          host = ${{ secrets.DATABRICKS_HOST }}
+          token = ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+      
+      - name: Deploy Bundle
+        id: deploy
+        run: |
+          databricks bundle deploy \
+            --target ${{ github.event.inputs.target || 'dev' }} \
+            --force \
+            --var="environment=${{ github.event.inputs.target || 'dev' }}"
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Get Deployment Info
+        run: |
+          echo "## DABs Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Target Environment:** \`${{ github.event.inputs.target || 'dev' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Deployed Resources" >> $GITHUB_STEP_SUMMARY
+          
+          # List deployed jobs and workflows
+          databricks bundle resources list --target ${{ github.event.inputs.target || 'dev' }} >> $GITHUB_STEP_SUMMARY || echo "No resources found" >> $GITHUB_STEP_SUMMARY
+
+  run-workflow:
+    name: Execute Databricks Workflow
+    needs: deploy
+    if: |
+      github.event.inputs.run_workflow == 'true' || 
+      (github.ref == 'refs/heads/main' && github.event_name == 'push')
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.target || 'dev' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      
+      - name: Configure Databricks
+        run: |
+          mkdir -p ~/.databrickscfg
+          cat > ~/.databrickscfg <<EOF
+          [DEFAULT]
+          host = ${{ secrets.DATABRICKS_HOST }}
+          token = ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+      
+      - name: Run Bundle Workflow
+        run: |
+          databricks bundle run \
+            --target ${{ github.event.inputs.target || 'dev' }}
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        continue-on-error: true
+      
+      - name: Workflow Execution Summary
+        run: |
+          echo "## Workflow Execution 🏃" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Workflow triggered for environment: **${{ github.event.inputs.target || 'dev' }}**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check Databricks UI for detailed job execution status." >> $GITHUB_STEP_SUMMARY
+
+  post-deploy:
+    name: Post-Deployment Checks
+    needs: [deploy, run-workflow]
+    if: always()
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deployment Status
+        run: |
+          echo "## Final Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.deploy.result }}" == "success" ]; then
+            echo "✅ **DABs deployment successful**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **DABs deployment failed**" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.run-workflow.result }}" == "success" ]; then
+            echo "✅ **Workflow execution completed**" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.run-workflow.result }}" == "skipped" ]; then
+            echo "⏭️ **Workflow execution skipped**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Workflow execution failed or was cancelled**" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Useful Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [Databricks Workspace](${{ secrets.DATABRICKS_HOST }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [Unity Catalog Data Explorer](${{ secrets.DATABRICKS_HOST }}/explore/data)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Workflows](${{ secrets.DATABRICKS_HOST }}/workflows)" >> $GITHUB_STEP_SUMMARY
