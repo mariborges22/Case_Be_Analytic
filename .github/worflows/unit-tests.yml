@@ -8,11 +8,11 @@ name: Unit Tests
 on:
   pull_request:
     branches:
-      - dev
+      - master
       - main
   push:
     branches:
-      - dev
+      - master
       - main
 
 jobs:

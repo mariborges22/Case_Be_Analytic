@@ -9,12 +9,14 @@ on:
   pull_request:
     branches:
       - main
+      - master
     paths:
       - 'infra/**'
       - '.github/workflows/terraform_infra.yml'
   push:
     branches:
       - main
+      - master
     paths:
       - 'infra/**'
   workflow_dispatch:
