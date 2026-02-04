@@ -170,21 +170,28 @@ jobs:
           fi
       
       - name: Deploy DABs
-        if: hashFiles('databricks.yml') != ''
         run: |
-          databricks bundle deploy \
-            --target ${{ github.event.inputs.environment || 'dev' }} \
-            --force
+          if [ -f databricks.yml ]; then
+            databricks bundle deploy \
+              --target ${{ github.event.inputs.environment || 'dev' }} \
+              --force
+          else
+            echo "⚠️  No databricks.yml found - skipping deployment"
+          fi
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       
       - name: Run DABs workflows (if applicable)
-        if: hashFiles('databricks.yml') != '' && github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         continue-on-error: true
         run: |
-          databricks bundle run \
-            --target ${{ github.event.inputs.environment || 'dev' }}
+          if [ -f databricks.yml ]; then
+            databricks bundle run \
+              --target ${{ github.event.inputs.environment || 'dev' }}
+          else
+            echo "⚠️  No databricks.yml found - skipping workflow execution"
+          fi
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}

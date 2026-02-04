@@ -73,7 +73,6 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.target || 'dev' }}
-    if: hashFiles('databricks.yml') != ''
     
     steps:
       - name: Checkout code
