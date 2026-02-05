@@ -2,8 +2,10 @@
 Testes Unitários: Transformações puras da camada Medalhão.
 Usa mock_spark fixture - nenhuma chamada de rede ou cluster real.
 """
-import pytest
+
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestBronzeTransformations:
