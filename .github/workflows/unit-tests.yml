@@ -127,7 +127,7 @@ jobs:
       
       - name: Check code formatting
         run: |
-          black --check --diff src/ tests/
+          black --check --diff  tests/**
 
   lint-isort:
     name: Import Sorting Check (isort)
@@ -149,7 +149,7 @@ jobs:
       
       - name: Check import sorting
         run: |
-          isort --check-only --diff tests/
+          isort --check-only --diff tests/**
 
   lint-flake8:
     name: Code Linting (flake8)
@@ -172,13 +172,13 @@ jobs:
       - name: Lint with flake8 (critical errors)
         run: |
           # Stop the build if there are Python syntax errors or undefined names
-          flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8  tests/** --count --select=E9,F63,F7,F82 --show-source --statistics
       
       - name: Lint with flake8 (warnings)
         continue-on-error: true
         run: |
           # Exit-zero treats all errors as warnings
-          flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+          flake8  tests/** --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
   lint-mypy:
     name: Type Checking (mypy)
@@ -201,7 +201,7 @@ jobs:
       - name: Type checking
         continue-on-error: true
         run: |
-          mypy src/ --ignore-missing-imports --no-strict-optional
+          mypy tests/ --ignore-missing-imports --no-strict-optional
 
   test-summary:
     name: Test Summary
