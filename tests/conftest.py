@@ -3,8 +3,8 @@ Configuração global de fixtures Pytest para testes Databricks.
 - mock_spark: Spark mockado para testes unitários (sem I/O real).
 - databricks_spark: SparkSession real via Databricks Connect Serverless.
 """
-from unittest.mock import MagicMock
-import pytest
+from unittest.mock import MagicMock, pytest
+
 
 
 
