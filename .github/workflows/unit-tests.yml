@@ -66,7 +66,7 @@ jobs:
       - name: Run unit tests
         run: |
           # Run pytest with coverage
-          pytest tests/tests_unit/ \
+          pytest tests/tests_unity/ \
             -v \
             --tb=short \
             --cov=src \
