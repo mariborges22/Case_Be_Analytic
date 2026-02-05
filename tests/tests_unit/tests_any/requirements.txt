@@ -1,0 +1,32 @@
+# --- Core Data & Spark ---
+# Necessário para reconhecer as APIs do Spark localmente e no CI [3]
+pyspark==3.5.0
+
+# --- Connectivity (Headless Execution) ---
+# Permite que o Pytest execute código Spark real no cluster Serverless [4, 5]
+databricks-connect==3.5.0 
+
+# --- Testing Framework ---
+# Base para todos os testes automatizados [6, 7]
+pytest==8.0.0
+# Gera relatórios de quais linhas do código foram testadas [8, 9]
+pytest-cov==4.1.0
+# Facilita a criação de 'mocks' para isolar funções de APIs externas [7, 10]
+pytest-mock==3.12.0
+# Biblioteca especializada para comparar igualdade entre DataFrames PySpark [11]
+chispa==0.9.2
+
+# --- Code Quality & Formatting ---
+# Garante que o código siga o padrão de formatação PEP8 [12]
+black==24.1.1
+# Organiza os 'imports' de forma padronizada [12]
+isort==5.13.2
+# Analisador estático que detecta erros de sintaxe e estilo [12]
+flake8==7.0.0
+# Plugin específico para validar padrões de código dentro de notebooks [13]
+pylint==3.0.3
+databricks-labs-pylint==0.1.0
+
+# --- Data Quality (Opcional, mas recomendado) ---
+# Para validar contratos de dados e restrições (ex: IDs não nulos) [14]
+great-expectations==0.18.0
