@@ -127,7 +127,7 @@ jobs:
       
       - name: Check code formatting
         run: |
-          black --check --diff  tests/**
+          black --check --diff  tests/
 
   lint-isort:
     name: Import Sorting Check (isort)
@@ -149,7 +149,7 @@ jobs:
       
       - name: Check import sorting
         run: |
-          isort --check-only --diff tests/**
+          isort --check-only --diff tests/
 
   lint-flake8:
     name: Code Linting (flake8)
@@ -178,7 +178,7 @@ jobs:
         continue-on-error: true
         run: |
           # Exit-zero treats all errors as warnings
-          flake8  tests/** --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+          flake8  tests/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
   lint-mypy:
     name: Type Checking (mypy)
