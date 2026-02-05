@@ -66,10 +66,10 @@ jobs:
       - name: Run unit tests
         run: |
           # Run pytest with coverage
-          pytest tests/tests_unity/ \
+          pytest tests/ \
             -v \
             --tb=short \
-            --cov=src \
+            --cov=pipelines/modules \
             --cov-report=term-missing \
             --cov-report=xml \
             --cov-report=html \

@@ -4,7 +4,9 @@ Configuração global de fixtures Pytest para testes Databricks.
 - databricks_spark: SparkSession real via Databricks Connect Serverless.
 """
 from unittest.mock import MagicMock
+
 import pytest
+
 
 @pytest.fixture(scope="function")
 def mock_spark():
