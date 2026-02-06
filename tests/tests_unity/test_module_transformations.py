@@ -123,4 +123,3 @@ class TestGoldAggregations:
 
         assert mock_df.select.called
         assert mock_df.distinct.called
-

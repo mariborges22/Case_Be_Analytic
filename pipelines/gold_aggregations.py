@@ -147,4 +147,3 @@ if __name__ == "__main__":
     create_star_schema_dimensions(spark, SILVER_TABLE)
 
     spark.stop()
-

@@ -28,12 +28,47 @@ class TestBronzeToSilverIntegration:
         """Valida transformação completa Bronze → Silver com schema MCO."""
         # Arrange: Simula dados Bronze
         bronze_data = [
-            ("LINHA-001", "2025-09-01", "08:00:00", 45, "2025-09-01T08:00:00", "https://example.com/mco.csv"),
-            ("LINHA-001", "2025-09-01", "08:00:00", 45, "2025-09-01T08:00:00", "https://example.com/mco.csv"),  # Duplicata
-            ("LINHA-002", "2025-09-01", "09:00:00", None, "2025-09-01T09:00:00", "https://example.com/mco.csv"),  # Null
-            ("LINHA-003", "2025-09-01", "10:00:00", 52, "2025-09-01T10:00:00", "https://example.com/mco.csv"),
+            (
+                "LINHA-001",
+                "2025-09-01",
+                "08:00:00",
+                45,
+                "2025-09-01T08:00:00",
+                "https://example.com/mco.csv",
+            ),
+            (
+                "LINHA-001",
+                "2025-09-01",
+                "08:00:00",
+                45,
+                "2025-09-01T08:00:00",
+                "https://example.com/mco.csv",
+            ),  # Duplicata
+            (
+                "LINHA-002",
+                "2025-09-01",
+                "09:00:00",
+                None,
+                "2025-09-01T09:00:00",
+                "https://example.com/mco.csv",
+            ),  # Null
+            (
+                "LINHA-003",
+                "2025-09-01",
+                "10:00:00",
+                52,
+                "2025-09-01T10:00:00",
+                "https://example.com/mco.csv",
+            ),
         ]
-        schema = ["LINHA", "DATA", "HORA", "QTDE_PASSAGEIROS", "_ingestion_timestamp", "_source_url"]
+        schema = [
+            "LINHA",
+            "DATA",
+            "HORA",
+            "QTDE_PASSAGEIROS",
+            "_ingestion_timestamp",
+            "_source_url",
+        ]
         bronze_df = databricks_spark.createDataFrame(bronze_data, schema)
 
         # Act: Aplica transformações Silver
@@ -46,7 +81,9 @@ class TestBronzeToSilverIntegration:
             .filter(F.col("DATA").isNotNull())
             .filter(F.col("QTDE_PASSAGEIROS").isNotNull())
             .filter(F.col("QTDE_PASSAGEIROS") >= 0)
-            .withColumn("QTDE_PASSAGEIROS", F.col("QTDE_PASSAGEIROS").cast(IntegerType()))
+            .withColumn(
+                "QTDE_PASSAGEIROS", F.col("QTDE_PASSAGEIROS").cast(IntegerType())
+            )
             .withColumn("_processed_at", F.current_timestamp())
         )
 
@@ -106,4 +143,3 @@ class TestSilverToGoldIntegration:
         assert result[("LINHA-002", "2025-09-01")] == 38
         assert result[("LINHA-001", "2025-09-02")] == 60
         print(f"[TEST] ✓ Silver → Gold: {gold_df.count()} agregações criadas")
-
