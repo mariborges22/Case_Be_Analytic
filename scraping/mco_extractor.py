@@ -2,6 +2,7 @@
 MCO Extractor - Bronze Layer
 Extrai dados do MCO (Mobilidade e Cidadania Operacional) de Belo Horizonte.
 """
+
 from datetime import datetime
 from pathlib import Path
 
@@ -38,8 +39,10 @@ def extract_mco_data(
     temp_csv.write_bytes(response.content)
 
     # Lê CSV com Spark
-    df = spark.read.option("header", "true").option("inferSchema", "true").csv(
-        str(temp_csv)
+    df = (
+        spark.read.option("header", "true")
+        .option("inferSchema", "true")
+        .csv(str(temp_csv))
     )
 
     # Adiciona metadados de ingestão

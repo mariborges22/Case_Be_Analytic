@@ -2,6 +2,7 @@
 Silver Refinement Pipeline - Camada Prata
 Limpeza, deduplicação e validação de dados do MCO.
 """
+
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import DateType, IntegerType, StringType, TimestampType

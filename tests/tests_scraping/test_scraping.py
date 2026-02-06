@@ -1,6 +1,7 @@
 """
 Testes para MCO Extractor - Camada Bronze.
 """
+
 from unittest.mock import MagicMock, patch
 
 import pytest

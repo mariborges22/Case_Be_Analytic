@@ -1,6 +1,7 @@
 """
 Testes para Pipelines Silver e Gold.
 """
+
 from unittest.mock import MagicMock
 
 import pytest
