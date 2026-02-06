@@ -1,0 +1,47 @@
+# ============================================================================
+# MCO Pipeline ETL - Databricks Job Orchestration
+# ============================================================================
+
+name: MCO Pipeline ETL
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'scraping/**'
+      - 'pipelines/**'
+  workflow_dispatch:
+
+jobs:
+  deploy-and-run:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install Databricks CLI
+        run: |
+          pip install databricks-cli
+      
+      - name: Configure Databricks CLI
+        run: |
+          databricks configure --token <<EOF
+          ${{ secrets.DATABRICKS_HOST }}
+          ${{ secrets.DATABRICKS_TOKEN }}
+          EOF
+      
+      - name: Upload scripts to DBFS
+        run: |
+          databricks fs cp scraping/mco_extractor.py dbfs:/pipelines/scraping/ --overwrite
+          databricks fs cp pipelines/silver_refinement.py dbfs:/pipelines/silver/ --overwrite
+          databricks fs cp pipelines/gold_aggregations.py dbfs:/pipelines/gold/ --overwrite
+      
+      - name: Trigger MCO Pipeline Job
+        run: |
+          databricks jobs run-now --job-id ${{ secrets.MCO_JOB_ID }}

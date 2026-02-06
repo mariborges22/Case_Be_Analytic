@@ -331,3 +331,92 @@ resource "databricks_grants" "gold_schema_grants" {
     privileges = ["USE_SCHEMA", "SELECT"]
   }
 }
+
+# ----------------------------------------------------------------------------
+# Databricks Job - MCO Pipeline Orchestration
+# ----------------------------------------------------------------------------
+
+resource "databricks_job" "mco_pipeline" {
+  name = "MCO-Medallion-Pipeline"
+  
+  # Task 1: Bronze - Extract MCO Data
+  task {
+    task_key = "bronze_extraction"
+    
+    existing_cluster_id = databricks_cluster.bronze_cluster.id
+    
+    python_wheel_task {
+      package_name = "scraping"
+      entry_point  = "mco_extractor"
+      parameters   = [
+        "--source-url", "https://dados.pbh.gov.br/dataset/mco/resource/mco.csv",
+        "--output-path", "/dbfs/mnt/bronze/mco/",
+        "--catalog-name", var.catalog_name,
+        "--schema-name", var.bronze_schema
+      ]
+    }
+    
+    library {
+      pypi {
+        package = "requests>=2.31.0"
+      }
+    }
+  }
+  
+  # Task 2: Silver - Refine Data
+  task {
+    task_key = "silver_refinement"
+    
+    depends_on {
+      task_key = "bronze_extraction"
+    }
+    
+    existing_cluster_id = databricks_cluster.silver_cluster.id
+    
+    python_wheel_task {
+      package_name = "pipelines"
+      entry_point  = "silver_refinement"
+      parameters   = [
+        "--bronze-table", "${var.catalog_name}.${var.bronze_schema}.mco_raw",
+        "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean"
+      ]
+    }
+  }
+  
+  # Task 3: Gold - Create Aggregates
+  task {
+    task_key = "gold_aggregations"
+    
+    depends_on {
+      task_key = "silver_refinement"
+    }
+    
+    existing_cluster_id = databricks_cluster.gold_cluster.id
+    
+    python_wheel_task {
+      package_name = "pipelines"
+      entry_point  = "gold_aggregations"
+      parameters   = [
+        "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean",
+        "--gold-table", "${var.catalog_name}.${var.gold_schema}.mco_aggregates"
+      ]
+    }
+  }
+  
+  # Schedule: Daily at 2 AM
+  schedule {
+    quartz_cron_expression = "0 0 2 * * ?"
+    timezone_id            = "America/Sao_Paulo"
+  }
+  
+  email_notifications {
+    on_failure = [var.owner]
+  }
+  
+  tags = {
+    Environment = var.environment
+    Project     = var.project_name
+    Pipeline    = "mco-medallion"
+  }
+}
+
