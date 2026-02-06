@@ -6,8 +6,6 @@ Usa mock_spark fixture - nenhuma chamada de rede ou cluster real.
 from unittest.mock import MagicMock, patch
 
 
-
-
 class TestBronzeTransformations:
     """Testes de lógica de ingestão Bronze."""
 
