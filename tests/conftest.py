@@ -1,6 +1,6 @@
-import os
+
 import sys
-from pathlib import Path
+from pathlib import Path 
 
 import pytest
 from pyspark.sql import SparkSession
