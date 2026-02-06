@@ -13,8 +13,14 @@ variable "databricks_host" {
   sensitive   = true
 }
 
-variable "databricks_token" {
-  description = "Databricks personal access token or service principal token"
+variable "databricks_client_id" {
+  description = "Databricks Service Principal Client ID for OAuth authentication"
+  type        = string
+  sensitive   = true
+}
+
+variable "databricks_client_secret" {
+  description = "Databricks Service Principal Client Secret for OAuth authentication"
   type        = string
   sensitive   = true
 }
@@ -30,9 +36,9 @@ variable "databricks_account_id" {
 # ----------------------------------------------------------------------------
 
 variable "catalog_name" {
-  description = "Name of the Unity Catalog for SUS Lakehouse"
+  description = "Name of the Unity Catalog for MCO Lakehouse"
   type        = string
-  default     = "sus_lakehouse"
+  default     = "mco_catalog"
 }
 
 variable "metastore_id" {
@@ -155,7 +161,7 @@ variable "environment" {
 variable "project_name" {
   description = "Project name for resource tagging"
   type        = string
-  default     = "sus-log-engine"
+  default     = "mco-pipeline"
 }
 
 variable "owner" {

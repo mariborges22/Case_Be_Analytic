@@ -1,6 +1,7 @@
 # ============================================================================
 # Unity Catalog Governance - Declarative RBAC Configuration
 # Catalog: mco_catalog | Namespace: catalog.schema.table
+# Authentication: Service Principal OAuth (terraform-cicd-sp)
 # ============================================================================
 
 name: Unity Catalog Governance
@@ -17,6 +18,11 @@ jobs:
   apply-governance:
     runs-on: ubuntu-latest
     
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,19 +31,17 @@ jobs:
         run: |
           pip install databricks-cli
       
-      - name: Configure Databricks
+      - name: Verify Databricks Authentication
         run: |
-          databricks configure --token <<EOF
-          ${{ secrets.DATABRICKS_HOST }}
-          ${{ secrets.DATABRICKS_TOKEN }}
-          EOF
+          echo "Testing Databricks connection with Service Principal..."
+          databricks workspace list / --output JSON || echo "Connection test failed"
       
       - name: Create Catalog
         run: |
           databricks unity-catalog catalogs create \
             --name mco_catalog \
             --comment "MCO (Mobilidade e Cidadania Operacional) - Arquitetura Medalhão com governança RBAC" \
-            --properties '{"lineage_enabled":"true","data_classification":"public","owner":"engineers_group"}' \
+            --properties '{"lineage_enabled":"true","data_classification":"public","owner":"engineers_group","data_source":"mco_belo_horizonte"}' \
             || echo "Catalog already exists"
       
       # --------------------------------------------------------------------
@@ -79,7 +83,7 @@ jobs:
             --catalog-name mco_catalog \
             --name silver \
             --comment "Camada Silver: Dados limpos, validados e desduplicados (single source of truth)" \
-            --properties '{"layer":"silver","data_type":"validated","operations":"cleaning,deduplication,normalization","lineage_enabled":"true"}' \
+            --properties '{"layer":"silver","data_type":"validated","operations":"cleaning,deduplication,normalization,null_handling","lineage_enabled":"true"}' \
             || echo "Silver schema already exists"
       
       - name: Grant Silver Permissions - Engineers
@@ -152,3 +156,5 @@ jobs:
           echo "Schemas: bronze, silver, gold"
           echo "RBAC Groups: engineers_group, compliance_auditors_group, data_scientists_group, analysts_group, business_executives_group"
           echo "Lineage: Enabled"
+          echo "Authentication: Service Principal OAuth (terraform-cicd-sp)"
+

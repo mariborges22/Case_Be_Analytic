@@ -19,24 +19,26 @@ terraform {
 # ----------------------------------------------------------------------------
 
 provider "databricks" {
-  host  = var.databricks_host
-  token = var.databricks_token
+  host          = var.databricks_host
+  client_id     = var.databricks_client_id
+  client_secret = var.databricks_client_secret
 }
 
 # ----------------------------------------------------------------------------
 # Unity Catalog - Main Catalog
 # ----------------------------------------------------------------------------
 
-resource "databricks_catalog" "sus_lakehouse" {
+resource "databricks_catalog" "mco_catalog" {
   name    = var.catalog_name
-  comment = "SUS Lakehouse - Arquitetura Medalhão para processamento de logs do SUS Log Engine"
+  comment = "MCO Catalog - Arquitetura Medalhão para dados de Mobilidade e Cidadania Operacional de Belo Horizonte"
   
   properties = {
-    environment = var.environment
-    project     = var.project_name
-    owner       = var.owner
-    cost_center = var.cost_center
+    environment  = var.environment
+    project      = var.project_name
+    owner        = var.owner
+    cost_center  = var.cost_center
     architecture = "medallion"
+    data_source  = "mco_belo_horizonte"
   }
   
   # CRITICAL: Prevent accidental deletion of the entire catalog
@@ -50,15 +52,15 @@ resource "databricks_catalog" "sus_lakehouse" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "bronze" {
-  catalog_name = databricks_catalog.sus_lakehouse.name
+  catalog_name = databricks_catalog.mco_catalog.name
   name         = var.bronze_schema
-  comment      = "Camada Bronze: Dados brutos e imutáveis do SUS Log Engine (ELT - Extract & Load)"
+  comment      = "Camada Bronze: Dados brutos e imutáveis do MCO (ELT - Extract & Load)"
   
   properties = {
-    layer       = "bronze"
-    data_type   = "raw"
+    layer        = "bronze"
+    data_type    = "raw"
     is_immutable = "true"
-    description = "Ingestão de logs originais sem transformação"
+    description  = "Ingestão de dados MCO originais sem transformação"
   }
   
   # CRITICAL: Prevent accidental deletion of bronze schema
@@ -72,15 +74,15 @@ resource "databricks_schema" "bronze" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "silver" {
-  catalog_name = databricks_catalog.sus_lakehouse.name
+  catalog_name = databricks_catalog.mco_catalog.name
   name         = var.silver_schema
   comment      = "Camada Prata: Dados limpos, validados e desduplicados (ELT - Transform)"
   
   properties = {
-    layer          = "silver"
-    data_type      = "validated"
-    operations     = "cleaning,deduplication,normalization"
-    description    = "Versão única da verdade (single source of truth)"
+    layer       = "silver"
+    data_type   = "validated"
+    operations  = "cleaning,deduplication,normalization,null_handling"
+    description = "Versão única da verdade (single source of truth)"
   }
   
   # CRITICAL: Prevent accidental deletion of silver schema
@@ -94,16 +96,16 @@ resource "databricks_schema" "silver" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "gold" {
-  catalog_name = databricks_catalog.sus_lakehouse.name
+  catalog_name = databricks_catalog.mco_catalog.name
   name         = var.gold_schema
   comment      = "Camada Ouro: Agregados de negócio e modelagem dimensional (Star Schema)"
   
   properties = {
-    layer          = "gold"
-    data_type      = "aggregated"
-    modeling       = "star_schema"
-    optimization   = "zorder,partitioning"
-    description    = "Dados otimizados para consumo de negócio e analytics"
+    layer        = "gold"
+    data_type    = "aggregated"
+    modeling     = "star_schema"
+    optimization = "zorder,partitioning"
+    description  = "Dados otimizados para consumo de negócio e analytics"
   }
   
   # CRITICAL: Prevent accidental deletion of gold schema
@@ -151,10 +153,12 @@ resource "databricks_cluster" "bronze_cluster" {
   
   # Environment variables
   spark_env_vars = {
-    CATALOG_NAME  = databricks_catalog.sus_lakehouse.name
-    SCHEMA_NAME   = databricks_schema.bronze.name
-    LAYER         = "bronze"
-    ENVIRONMENT   = var.environment
+    CATALOG_NAME               = databricks_catalog.mco_catalog.name
+    SCHEMA_NAME                = databricks_schema.bronze.name
+    LAYER                      = "bronze"
+    ENVIRONMENT                = var.environment
+    DATABRICKS_CLIENT_ID       = var.databricks_client_id
+    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
   }
   
   custom_tags = {
@@ -207,10 +211,12 @@ resource "databricks_cluster" "silver_cluster" {
   }
   
   spark_env_vars = {
-    CATALOG_NAME  = databricks_catalog.sus_lakehouse.name
-    SCHEMA_NAME   = databricks_schema.silver.name
-    LAYER         = "silver"
-    ENVIRONMENT   = var.environment
+    CATALOG_NAME               = databricks_catalog.mco_catalog.name
+    SCHEMA_NAME                = databricks_schema.silver.name
+    LAYER                      = "silver"
+    ENVIRONMENT                = var.environment
+    DATABRICKS_CLIENT_ID       = var.databricks_client_id
+    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
   }
   
   custom_tags = {
@@ -261,10 +267,12 @@ resource "databricks_cluster" "gold_cluster" {
   }
   
   spark_env_vars = {
-    CATALOG_NAME  = databricks_catalog.sus_lakehouse.name
-    SCHEMA_NAME   = databricks_schema.gold.name
-    LAYER         = "gold"
-    ENVIRONMENT   = var.environment
+    CATALOG_NAME               = databricks_catalog.mco_catalog.name
+    SCHEMA_NAME                = databricks_schema.gold.name
+    LAYER                      = "gold"
+    ENVIRONMENT                = var.environment
+    DATABRICKS_CLIENT_ID       = var.databricks_client_id
+    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
   }
   
   custom_tags = {
@@ -289,7 +297,7 @@ resource "databricks_cluster" "gold_cluster" {
 
 # Grant read access to all schemas for data analysts
 resource "databricks_grants" "catalog_grants" {
-  catalog = databricks_catalog.sus_lakehouse.name
+  catalog = databricks_catalog.mco_catalog.name
   
   grant {
     principal  = "account users"
@@ -299,7 +307,7 @@ resource "databricks_grants" "catalog_grants" {
 
 # Bronze schema: Only data engineers can write
 resource "databricks_grants" "bronze_schema_grants" {
-  schema = "${databricks_catalog.sus_lakehouse.name}.${databricks_schema.bronze.name}"
+  schema = "${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
   
   grant {
     principal  = "data-engineers"
@@ -309,7 +317,7 @@ resource "databricks_grants" "bronze_schema_grants" {
 
 # Silver schema: Data engineers can write
 resource "databricks_grants" "silver_schema_grants" {
-  schema = "${databricks_catalog.sus_lakehouse.name}.${databricks_schema.silver.name}"
+  schema = "${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
   
   grant {
     principal  = "data-engineers"
@@ -319,7 +327,7 @@ resource "databricks_grants" "silver_schema_grants" {
 
 # Gold schema: Data engineers and analysts can read
 resource "databricks_grants" "gold_schema_grants" {
-  schema = "${databricks_catalog.sus_lakehouse.name}.${databricks_schema.gold.name}"
+  schema = "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
   
   grant {
     principal  = "data-engineers"
@@ -345,12 +353,11 @@ resource "databricks_job" "mco_pipeline" {
     
     existing_cluster_id = databricks_cluster.bronze_cluster.id
     
-    python_wheel_task {
-      package_name = "scraping"
-      entry_point  = "mco_extractor"
-      parameters   = [
-        "--source-url", "https://dados.pbh.gov.br/dataset/mco/resource/mco.csv",
-        "--output-path", "/dbfs/mnt/bronze/mco/",
+    spark_python_task {
+      python_file = "scraping/mco_extractor.py"
+      parameters  = [
+        "--source-url",
+        "https://ckan.pbh.gov.br/dataset/7ae4d4b4-6b52-4042-b021-0935a1db3814/resource/123b7a8a-ceb1-4f8c-9ec6-9ce76cdf9aab/download/mco-09-2025.csv",
         "--catalog-name", var.catalog_name,
         "--schema-name", var.bronze_schema
       ]
@@ -373,10 +380,9 @@ resource "databricks_job" "mco_pipeline" {
     
     existing_cluster_id = databricks_cluster.silver_cluster.id
     
-    python_wheel_task {
-      package_name = "pipelines"
-      entry_point  = "silver_refinement"
-      parameters   = [
+    spark_python_task {
+      python_file = "pipelines/silver_refinement.py"
+      parameters  = [
         "--bronze-table", "${var.catalog_name}.${var.bronze_schema}.mco_raw",
         "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean"
       ]
@@ -393,12 +399,11 @@ resource "databricks_job" "mco_pipeline" {
     
     existing_cluster_id = databricks_cluster.gold_cluster.id
     
-    python_wheel_task {
-      package_name = "pipelines"
-      entry_point  = "gold_aggregations"
-      parameters   = [
+    spark_python_task {
+      python_file = "pipelines/gold_aggregations.py"
+      parameters  = [
         "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean",
-        "--gold-table", "${var.catalog_name}.${var.gold_schema}.mco_aggregates"
+        "--gold-table", "${var.catalog_name}.${var.gold_schema}.fact_passageiros"
       ]
     }
   }
