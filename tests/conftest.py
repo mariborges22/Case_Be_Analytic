@@ -79,7 +79,11 @@ def databricks_spark():
         )
 
     # Valida variáveis de ambiente
-    required_vars = ["DATABRICKS_HOST", "DATABRICKS_CLIENT_ID", "DATABRICKS_CLIENT_SECRET"]
+    required_vars = [
+        "DATABRICKS_HOST",
+        "DATABRICKS_CLIENT_ID",
+        "DATABRICKS_CLIENT_SECRET",
+    ]
     missing_vars = [var for var in required_vars if not os.getenv(var)]
 
     if missing_vars:
@@ -104,11 +108,39 @@ def sample_bronze_data(spark):
     Simula dados MCO brutos para testes.
     """
     data = [
-        ("LINHA-001", "2025-09-01", "08:00:00", 45, "2025-09-01T08:00:00", "https://example.com/mco.csv"),
-        ("LINHA-001", "2025-09-01", "09:00:00", 52, "2025-09-01T09:00:00", "https://example.com/mco.csv"),
-        ("LINHA-002", "2025-09-01", "08:00:00", 38, "2025-09-01T08:00:00", "https://example.com/mco.csv"),
+        (
+            "LINHA-001",
+            "2025-09-01",
+            "08:00:00",
+            45,
+            "2025-09-01T08:00:00",
+            "https://example.com/mco.csv",
+        ),
+        (
+            "LINHA-001",
+            "2025-09-01",
+            "09:00:00",
+            52,
+            "2025-09-01T09:00:00",
+            "https://example.com/mco.csv",
+        ),
+        (
+            "LINHA-002",
+            "2025-09-01",
+            "08:00:00",
+            38,
+            "2025-09-01T08:00:00",
+            "https://example.com/mco.csv",
+        ),
     ]
-    schema = ["LINHA", "DATA", "HORA", "QTDE_PASSAGEIROS", "_ingestion_timestamp", "_source_url"]
+    schema = [
+        "LINHA",
+        "DATA",
+        "HORA",
+        "QTDE_PASSAGEIROS",
+        "_ingestion_timestamp",
+        "_source_url",
+    ]
     return spark.createDataFrame(data, schema)
 
 
@@ -118,4 +150,3 @@ def temp_path(tmp_path):
     Fixture: Caminho temporário para outputs de teste.
     """
     return tmp_path
-

@@ -51,10 +51,13 @@ def refine_to_silver(
         df_normalized
         # Remove duplicatas por chave primária
         # Ajuste conforme schema real: LINHA, DATA, HORA são campos típicos do MCO
-        .dropDuplicates(["LINHA", "DATA", "HORA"] if "HORA" in df_normalized.columns else ["LINHA", "DATA"])
+        .dropDuplicates(
+            ["LINHA", "DATA", "HORA"]
+            if "HORA" in df_normalized.columns
+            else ["LINHA", "DATA"]
+        )
         # Remove registros com campos críticos nulos
-        .filter(F.col("LINHA").isNotNull())
-        .filter(F.col("DATA").isNotNull())
+        .filter(F.col("LINHA").isNotNull()).filter(F.col("DATA").isNotNull())
         # CRITICAL: Trata nulos em QTDE_PASSAGEIROS
         # Estratégia: Remove registros com passageiros nulos (dados inválidos)
         .filter(F.col("QTDE_PASSAGEIROS").isNotNull())
@@ -65,9 +68,7 @@ def refine_to_silver(
     # Cast de tipos (ajustar conforme schema real do MCO)
     df_typed = df_clean.withColumn(
         "DATA", F.to_date(F.col("DATA"), "yyyy-MM-dd")
-    ).withColumn(
-        "QTDE_PASSAGEIROS", F.col("QTDE_PASSAGEIROS").cast(IntegerType())
-    )
+    ).withColumn("QTDE_PASSAGEIROS", F.col("QTDE_PASSAGEIROS").cast(IntegerType()))
 
     # Normaliza strings (trim e uppercase para consistência)
     string_columns = [
@@ -77,9 +78,7 @@ def refine_to_silver(
     ]
 
     for col_name in string_columns:
-        df_typed = df_typed.withColumn(
-            col_name, F.trim(F.upper(F.col(col_name)))
-        )
+        df_typed = df_typed.withColumn(col_name, F.trim(F.upper(F.col(col_name))))
 
     # Adiciona timestamp de processamento
     df_silver = df_typed.withColumn("_processed_at", F.current_timestamp())
@@ -116,4 +115,3 @@ if __name__ == "__main__":
 
     refine_to_silver(spark, BRONZE_TABLE, SILVER_TABLE)
     spark.stop()
-
