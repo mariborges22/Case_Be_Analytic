@@ -5,7 +5,7 @@
 resource "databricks_cluster" "bronze_cluster" {
   cluster_name            = var.bronze_cluster_name
   spark_version           = var.cluster_spark_version
-  node_type_id            = var.cluster_node_type_id
+  node_type_id            = "i3.xlarge" # Bypass EBS requirement
   autotermination_minutes = var.cluster_autotermination_minutes
   
   autoscale {
@@ -14,13 +14,12 @@ resource "databricks_cluster" "bronze_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = "USER_ISOLATION" # Shared mode bypasses single_user_name requirement
+  data_security_mode = "SINGLE_USER"
+  single_user_name   = var.owner
 
   aws_attributes {
-    availability     = "ON_DEMAND"
-    zone_id          = "auto"
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
+    availability = "ON_DEMAND"
+    zone_id      = "auto"
   }
   
   spark_conf = {
@@ -63,7 +62,7 @@ resource "databricks_cluster" "bronze_cluster" {
 resource "databricks_cluster" "silver_cluster" {
   cluster_name            = var.silver_cluster_name
   spark_version           = var.cluster_spark_version
-  node_type_id            = var.cluster_node_type_id
+  node_type_id            = "i3.xlarge"
   autotermination_minutes = var.cluster_autotermination_minutes
   
   autoscale {
@@ -72,13 +71,12 @@ resource "databricks_cluster" "silver_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = "USER_ISOLATION"
+  data_security_mode = "SINGLE_USER"
+  single_user_name   = var.owner
 
   aws_attributes {
-    availability    = "ON_DEMAND"
-    zone_id         = "auto"
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
+    availability = "ON_DEMAND"
+    zone_id      = "auto"
   }
   
   spark_conf = {
@@ -122,7 +120,7 @@ resource "databricks_cluster" "silver_cluster" {
 resource "databricks_cluster" "gold_cluster" {
   cluster_name            = var.gold_cluster_name
   spark_version           = var.cluster_spark_version
-  node_type_id            = var.cluster_node_type_id
+  node_type_id            = "i3.xlarge"
   autotermination_minutes = var.cluster_autotermination_minutes
   
   autoscale {
@@ -131,13 +129,12 @@ resource "databricks_cluster" "gold_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = "USER_ISOLATION"
+  data_security_mode = "SINGLE_USER"
+  single_user_name   = var.owner
 
   aws_attributes {
-    availability     = "ON_DEMAND"
-    zone_id          = "auto"
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
+    availability = "ON_DEMAND"
+    zone_id      = "auto"
   }
   
   spark_conf = {
