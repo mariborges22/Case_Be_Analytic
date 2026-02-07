@@ -17,11 +17,9 @@ resource "databricks_cluster" "bronze_cluster" {
     spot_bid_price_percent = 100
     instance_profile_arn   = aws_iam_instance_profile.databricks_s3.arn
 
-    ebs_volume_params {
-      ebs_volume_count = 1
-      ebs_volume_size  = 32
-      ebs_volume_type  = "GENERAL_PURPOSE_SSD"
-    }
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 
   spark_conf = {
@@ -48,11 +46,9 @@ resource "databricks_cluster" "silver_cluster" {
     spot_bid_price_percent = 100
     instance_profile_arn   = aws_iam_instance_profile.databricks_s3.arn
 
-    ebs_volume_params {
-      ebs_volume_count = 1
-      ebs_volume_size  = 32
-      ebs_volume_type  = "GENERAL_PURPOSE_SSD"
-    }
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 
   spark_conf = {
@@ -79,11 +75,9 @@ resource "databricks_cluster" "gold_cluster" {
     spot_bid_price_percent = 100
     instance_profile_arn   = aws_iam_instance_profile.databricks_s3.arn
 
-    ebs_volume_params {
-      ebs_volume_count = 1
-      ebs_volume_size  = 32
-      ebs_volume_type  = "GENERAL_PURPOSE_SSD"
-    }
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 
   spark_conf = {
