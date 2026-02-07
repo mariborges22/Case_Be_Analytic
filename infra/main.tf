@@ -30,6 +30,7 @@ provider "databricks" {
 
 resource "databricks_catalog" "mco_catalog" {
   name    = var.catalog_name
+  storage_root = var.databricks_storage_root
   comment = "MCO Catalog - Arquitetura Medalhão para dados de Mobilidade e Cidadania Operacional de Belo Horizonte"
   
   properties = {

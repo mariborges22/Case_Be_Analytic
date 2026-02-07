@@ -83,6 +83,7 @@ jobs:
           TF_VAR_databricks_client_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+          TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
       
       - name: Terraform Validate
         id: validate
@@ -101,6 +102,7 @@ jobs:
           TF_VAR_databricks_client_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+          TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
       
       - name: Save Terraform Plan
         uses: actions/upload-artifact@v4
@@ -176,6 +178,7 @@ jobs:
           TF_VAR_databricks_client_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+          TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
       
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
@@ -190,6 +193,7 @@ jobs:
           TF_VAR_databricks_client_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+          TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
       
       - name: Terraform Output
         id: output
@@ -244,6 +248,7 @@ jobs:
           TF_VAR_databricks_client_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+          TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
       
       - name: Terraform Destroy
         run: |
@@ -256,3 +261,4 @@ jobs:
           TF_VAR_databricks_client_id: ${{ secrets.DATABRICKS_CLIENT_ID }}
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+          TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
