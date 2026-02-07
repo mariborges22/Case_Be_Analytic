@@ -4,7 +4,7 @@ terraform {
   required_providers {
     databricks = {
       source  = "databricks/databricks"
-      version = "1.30.0"
+      version = "1.50.0"
     }
     aws = {
       source  = "hashicorp/aws"
@@ -14,11 +14,11 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"  # Ajuste conforme necessário
+  region = "us-east-1"
 }
 
 provider "databricks" {
-  # Configurado via env vars:
+  # Configured via env vars:
   # DATABRICKS_HOST
   # DATABRICKS_CLIENT_ID
   # DATABRICKS_CLIENT_SECRET

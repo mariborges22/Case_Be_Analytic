@@ -49,14 +49,6 @@ resource "databricks_schema" "gold" {
   name         = var.gold_schema
   comment      = "Camada Ouro: Agregados de negócio e modelagem dimensional (Star Schema)"
   
-  # properties = {
-  #   layer        = "gold"
-  #   data_type    = "aggregated"
-  #   modeling     = "star_schema"
-  #   optimization = "zorder,partitioning"
-  #   description  = "Dados otimizados para consumo de negócio e analytics"
-  # }
-  
   lifecycle {
     prevent_destroy = true
   }
