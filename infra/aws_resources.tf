@@ -2,7 +2,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "databricks_data" {
-  bucket = "case-be-analytic"
+  bucket = "databricks-mco-lakehouse"
   
   tags = {
     Environment = "production"
@@ -75,7 +75,7 @@ resource "aws_s3_bucket_public_access_block" "databricks_data" {
 
 # IAM Role para Databricks acessar S3
 resource "aws_iam_role" "databricks_s3_access" {
-  name = "databricks-s3-access-role"
+  name = "case_be_analytic"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

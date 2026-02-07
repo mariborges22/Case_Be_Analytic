@@ -6,7 +6,7 @@
 # S3 Bucket
 import {
   to = aws_s3_bucket.databricks_data
-  id = "case-be-analytic"
+  id = "databricks-mco-lakehouse"
 }
 
 # Unity Catalog Schemas
@@ -28,7 +28,7 @@ import {
 # IAM Resources
 import {
   to = aws_iam_role.databricks_s3_access
-  id = "databricks-s3-access-role"
+  id = "case_be_analytic"
 }
 
 import {
