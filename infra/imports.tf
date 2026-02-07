@@ -35,3 +35,9 @@ import {
   to = aws_iam_instance_profile.databricks_s3
   id = "databricks-s3-instance-profile"
 }
+
+# Unity Catalog Resources
+import {
+  to = databricks_storage_credential.s3_credential
+  id = "s3-storage-credential"
+}

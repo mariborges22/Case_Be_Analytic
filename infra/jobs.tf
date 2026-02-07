@@ -20,6 +20,7 @@ resource "databricks_job" "mco_pipeline" {
     # The workspace handles compute automatically
     
     spark_python_task {
+      source      = "GIT"
       python_file = "scraping/mco_extractor.py"
       parameters  = [
         "--source-url", "https://ckan.pbh.gov.br/dataset/7ae4d4b4-6b52-4042-b021-0935a1db3814/resource/123b7a8a-ceb1-4f8c-9ec6-9ce76cdf9aab/download/mco-09-2025.csv",
@@ -34,6 +35,7 @@ resource "databricks_job" "mco_pipeline" {
     depends_on { task_key = "bronze_extraction" }
     
     spark_python_task {
+      source      = "GIT"
       python_file = "pipelines/silver_refinement.py"
       parameters  = [
         "--bronze-table", "${var.catalog_name}.${var.bronze_schema}.mco_raw",
@@ -47,6 +49,7 @@ resource "databricks_job" "mco_pipeline" {
     depends_on { task_key = "silver_refinement" }
     
     spark_python_task {
+      source      = "GIT"
       python_file = "pipelines/gold_aggregations.py"
       parameters  = [
         "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean",
@@ -68,5 +71,9 @@ resource "databricks_job" "mco_pipeline" {
     Environment = var.environment
     Project     = var.project_name
     Pipeline    = "mco-medallion"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }

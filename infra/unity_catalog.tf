@@ -7,6 +7,10 @@ resource "databricks_storage_credential" "s3_credential" {
   }
   
   comment = "S3 access for Unity Catalog"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # External Locations
