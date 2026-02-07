@@ -41,8 +41,8 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
           "s3:GetLifecycleConfiguration"
         ]
         Resource = [
-          data.aws_s3_bucket.databricks_data.arn,
-          "${data.aws_s3_bucket.databricks_data.arn}/*"
+          aws_s3_bucket.databricks_data.arn,
+          "${aws_s3_bucket.databricks_data.arn}/*"
         ]
       }
     ]
@@ -142,8 +142,8 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
           "s3:GetBucketPolicyStatus"
         ]
         Resource = [
-          data.aws_s3_bucket.databricks_data.arn,
-          "${data.aws_s3_bucket.databricks_data.arn}/*"
+          aws_s3_bucket.databricks_data.arn,
+          "${aws_s3_bucket.databricks_data.arn}/*"
         ]
       }
     ]
