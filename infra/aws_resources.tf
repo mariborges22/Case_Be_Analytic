@@ -2,7 +2,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "databricks_data" {
-  bucket = "databricks-mco-lakehouse"
+  bucket = "case-be-analytic"
   
   tags = {
     Environment = "production"
@@ -154,4 +154,10 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
 resource "aws_iam_instance_profile" "databricks_s3" {
   name = "databricks-s3-instance-profile"
   role = aws_iam_role.databricks_s3_access.name
+}
+
+# Registrar Instance Profile no Databricks
+resource "databricks_instance_profile" "s3_access" {
+  instance_profile_arn = aws_iam_instance_profile.databricks_s3.arn
+  skip_validation      = true
 }
