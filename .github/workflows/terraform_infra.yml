@@ -84,7 +84,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
-          terraform init -input=false
+          terraform init -input=false -upgrade
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}

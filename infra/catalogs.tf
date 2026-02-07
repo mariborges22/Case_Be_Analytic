@@ -1,17 +1,9 @@
 # ----------------------------------------------------------------------------
-# Unity Catalog - Main Catalog
-# ----------------------------------------------------------------------------
-
-data "databricks_catalog" "mco_catalog" {
-  name = var.catalog_name
-}
-
-# ----------------------------------------------------------------------------
 # Bronze Layer (Raw Data) - Immutable Ingestion
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "bronze" {
-  catalog_name = data.databricks_catalog.mco_catalog.name
+  catalog_name = var.catalog_name
   name         = var.bronze_schema
   comment      = "Camada Bronze: Dados brutos e imutáveis do MCO (ELT - Extract & Load)"
   
@@ -32,7 +24,7 @@ resource "databricks_schema" "bronze" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "silver" {
-  catalog_name = data.databricks_catalog.mco_catalog.name
+  catalog_name = var.catalog_name
   name         = var.silver_schema
   comment      = "Camada Prata: Dados limpos, validados e desduplicados (ELT - Transform)"
   
@@ -53,7 +45,7 @@ resource "databricks_schema" "silver" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "gold" {
-  catalog_name = data.databricks_catalog.mco_catalog.name
+  catalog_name = var.catalog_name
   name         = var.gold_schema
   comment      = "Camada Ouro: Agregados de negócio e modelagem dimensional (Star Schema)"
   
