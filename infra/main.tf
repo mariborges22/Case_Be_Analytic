@@ -320,50 +320,11 @@ resource "databricks_cluster" "gold_cluster" {
 # Grants and Permissions (RBAC via Unity Catalog)
 # ----------------------------------------------------------------------------
 
-# Grant read access to all schemas for data analysts
-resource "databricks_grants" "catalog_grants" {
-  catalog = data.databricks_catalog.mco_catalog.name
-  
-  grant {
-    principal  = "account users"
-    privileges = ["USE_CATALOG", "USE_SCHEMA", "SELECT"]
-  }
-}
-
-# Bronze schema: Only data engineers can write
-resource "databricks_grants" "bronze_schema_grants" {
-  schema = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
-  
-  grant {
-    principal  = "data-engineers"
-    privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
-  }
-}
-
-# Silver schema: Data engineers can write
-resource "databricks_grants" "silver_schema_grants" {
-  schema = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
-  
-  grant {
-    principal  = "data-engineers"
-    privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
-  }
-}
-
-# Gold schema: Data engineers and analysts can read
-resource "databricks_grants" "gold_schema_grants" {
-  schema = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
-  
-  grant {
-    principal  = "data-engineers"
-    privileges = ["USE_SCHEMA", "SELECT", "MODIFY", "CREATE_TABLE"]
-  }
-  
-  grant {
-    principal  = "data-analysts"
-    privileges = ["USE_SCHEMA", "SELECT"]
-  }
-}
+# Skipped: User requested removal of grants for non-existent groups
+# resource "databricks_grants" "catalog_grants" { ... }
+# resource "databricks_grants" "bronze_schema_grants" { ... }
+# resource "databricks_grants" "silver_schema_grants" { ... }
+# resource "databricks_grants" "gold_schema_grants" { ... }
 
 # ----------------------------------------------------------------------------
 # Databricks Job - MCO Pipeline Orchestration
