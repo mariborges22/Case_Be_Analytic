@@ -25,7 +25,7 @@ resource "aws_s3_bucket" "databricks_data" {
 
 # Bucket Policy para permitir acesso explícito do Role (Resolve 403 no Unity Catalog)
 resource "aws_s3_bucket_policy" "databricks_data_policy" {
-  bucket = data.aws_s3_bucket.databricks_data.id
+  bucket = aws_s3_bucket.databricks_data.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -54,7 +54,7 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
 
 # Criptografia
 resource "aws_s3_bucket_server_side_encryption_configuration" "databricks_data" {
-  bucket = data.aws_s3_bucket.databricks_data.id
+  bucket = aws_s3_bucket.databricks_data.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -65,7 +65,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "databricks_data" 
 
 # Bloquear acesso público
 resource "aws_s3_bucket_public_access_block" "databricks_data" {
-  bucket = data.aws_s3_bucket.databricks_data.id
+  bucket = aws_s3_bucket.databricks_data.id
 
   block_public_acls       = true
   block_public_policy     = true
