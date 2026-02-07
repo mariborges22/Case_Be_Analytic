@@ -147,6 +147,36 @@ resource "databricks_schema" "gold" {
 # Bronze Cluster - Raw Data Ingestion
 # ----------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------
+# Secrets for Cross-Cloud Access (Azure Credentials)
+# ----------------------------------------------------------------------------
+
+resource "databricks_secret_scope" "azure_credentials" {
+  name = "azure-storage-scope"
+}
+
+resource "databricks_secret" "azure_client_id" {
+  scope        = databricks_secret_scope.azure_credentials.name
+  key          = "azure-client-id"
+  string_value = var.azure_client_id
+}
+
+resource "databricks_secret" "azure_client_secret" {
+  scope        = databricks_secret_scope.azure_credentials.name
+  key          = "azure-client-secret"
+  string_value = var.azure_client_secret
+}
+
+resource "databricks_secret" "azure_tenant_id" {
+  scope        = databricks_secret_scope.azure_credentials.name
+  key          = "azure-tenant-id"
+  string_value = var.azure_tenant_id
+}
+
+# ----------------------------------------------------------------------------
+# Compute Resources (Clusters) - AWS Config accessing Azure Storage
+# ----------------------------------------------------------------------------
+
 resource "databricks_cluster" "bronze_cluster" {
   cluster_name            = var.bronze_cluster_name
   spark_version           = var.cluster_spark_version
@@ -163,10 +193,21 @@ resource "databricks_cluster" "bronze_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
+
+  aws_attributes {
+    availability           = "SPOT_WITH_FALLBACK"
+    zone_id                = "auto"
+    first_on_demand        = 1
+    spot_bid_price_percent = 100
+  }
   
-  # Spark configurations - PENDING REBOOT (não reinicia automaticamente)
-  # Mudanças nestes parâmetros exigirão restart manual via UI/API
   spark_conf = {
+    "fs.azure.account.auth.type"                                = "OAuth"
+    "fs.azure.account.oauth.provider.type"                      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+    "fs.azure.account.oauth2.client.id"                         = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_id.key}}}"
+    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_secret.key}}}"
+    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
+
     # Delta Lake optimizations
     "spark.databricks.delta.preview.enabled"           = "true"
     "spark.databricks.delta.optimizeWrite.enabled"     = var.enable_delta_optimize ? "true" : "false"
@@ -222,10 +263,27 @@ resource "databricks_cluster" "silver_cluster" {
     max_workers = var.cluster_max_workers
   }
   
-  runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
+  # Photon engine for performance
+  runtime_engine = var.enable_photon ? "PHOTON" : "STANDARD"
+  
+  # Unity Catalog security
   data_security_mode = var.data_security_mode
+
+  aws_attributes {
+    availability           = "SPOT_WITH_FALLBACK"
+    zone_id                = "auto"
+    first_on_demand        = 1
+    spot_bid_price_percent = 100
+  }
   
   spark_conf = {
+    "fs.azure.account.auth.type"                                = "OAuth"
+    "fs.azure.account.oauth.provider.type"                      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+    "fs.azure.account.oauth2.client.id"                         = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_id.key}}}"
+    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_secret.key}}}"
+    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
+
+    # Delta Lake optimizations
     "spark.databricks.delta.preview.enabled"           = "true"
     "spark.databricks.delta.optimizeWrite.enabled"     = var.enable_delta_optimize ? "true" : "false"
     "spark.databricks.delta.autoCompact.enabled"       = var.enable_delta_auto_compact ? "true" : "false"
@@ -243,6 +301,7 @@ resource "databricks_cluster" "silver_cluster" {
     LAYER                      = "silver"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
+    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
   }
   
   custom_tags = {
@@ -276,10 +335,27 @@ resource "databricks_cluster" "gold_cluster" {
     max_workers = var.cluster_max_workers
   }
   
-  runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
+  # Photon engine for performance
+  runtime_engine = var.enable_photon ? "PHOTON" : "STANDARD"
+  
+  # Unity Catalog security
   data_security_mode = var.data_security_mode
+
+  aws_attributes {
+    availability           = "SPOT_WITH_FALLBACK"
+    zone_id                = "auto"
+    first_on_demand        = 1
+    spot_bid_price_percent = 100
+  }
   
   spark_conf = {
+    "fs.azure.account.auth.type"                                = "OAuth"
+    "fs.azure.account.oauth.provider.type"                      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+    "fs.azure.account.oauth2.client.id"                         = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_id.key}}}"
+    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_secret.key}}}"
+    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
+
+    # Delta Lake optimizations
     "spark.databricks.delta.preview.enabled"           = "true"
     "spark.databricks.delta.optimizeWrite.enabled"     = var.enable_delta_optimize ? "true" : "false"
     "spark.databricks.delta.autoCompact.enabled"       = var.enable_delta_auto_compact ? "true" : "false"
@@ -298,6 +374,7 @@ resource "databricks_cluster" "gold_cluster" {
     LAYER                      = "gold"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
+    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
   }
   
   custom_tags = {

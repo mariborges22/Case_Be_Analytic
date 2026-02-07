@@ -85,6 +85,10 @@ jobs:
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
           TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_azure_storage_account_name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
       
       - name: Terraform Validate
         id: validate
@@ -105,6 +109,10 @@ jobs:
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
           TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_azure_storage_account_name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
       
       - name: Save Terraform Plan
         uses: actions/upload-artifact@v4
@@ -182,6 +190,10 @@ jobs:
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
           TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_azure_storage_account_name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
       
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
@@ -198,6 +210,10 @@ jobs:
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
           TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_azure_storage_account_name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
       
       - name: Terraform Output
         id: output
@@ -254,6 +270,10 @@ jobs:
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
           TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_azure_storage_account_name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
       
       - name: Terraform Destroy
         run: |
@@ -267,3 +287,8 @@ jobs:
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
+          TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          TF_VAR_azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          TF_VAR_azure_storage_account_name: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}

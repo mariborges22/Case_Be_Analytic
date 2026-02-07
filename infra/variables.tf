@@ -110,13 +110,13 @@ variable "gold_cluster_name" {
 }
 
 variable "cluster_node_type_id" {
-  description = "Node type for Databricks clusters (Azure: Standard_DS3_v2, AWS: i3.xlarge)"
+  description = "Node type for Databricks clusters (AWS: m5.xlarge)"
   type        = string
-  default     = "i3.xlarge"
+  default     = "m5.xlarge"
 }
 
 variable "cluster_spark_version" {
-  description = "Spark version for clusters (use LTS version)"
+  description = "Spark version for Databricks clusters"
   type        = string
   default     = "13.3.x-scala2.12"
 }
@@ -128,9 +128,9 @@ variable "enable_photon" {
 }
 
 variable "cluster_autotermination_minutes" {
-  description = "Auto-termination time in minutes for idle clusters"
+  description = "Minutes of inactivity before cluster termination"
   type        = number
-  default     = 30
+  default     = 20
 }
 
 variable "cluster_min_workers" {
