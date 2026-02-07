@@ -11,6 +11,13 @@ resource "databricks_job" "mco_pipeline" {
     provider = "gitHub"
   }
 
+  environment {
+    environment_key = "default"
+    spec {
+      client = "python"
+    }
+  }
+
   # Serverless compute is used for all tasks to comply with workspace restrictions
   
   task {
@@ -28,6 +35,8 @@ resource "databricks_job" "mco_pipeline" {
         "--schema-name", var.bronze_schema
       ]
     }
+
+    environment_key = "default"
   }
   
   task {
@@ -42,6 +51,8 @@ resource "databricks_job" "mco_pipeline" {
         "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean"
       ]
     }
+
+    environment_key = "default"
   }
   
   task {
@@ -56,6 +67,8 @@ resource "databricks_job" "mco_pipeline" {
         "--gold-table", "${var.catalog_name}.${var.gold_schema}.fact_passageiros"
       ]
     }
+
+    environment_key = "default"
   }
   
   schedule {

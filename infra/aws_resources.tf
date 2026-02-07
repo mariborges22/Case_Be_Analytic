@@ -56,6 +56,18 @@ resource "aws_iam_role" "databricks_s3_access" {
           Service = "ec2.amazonaws.com"
         }
         Action = "sts:AssumeRole"
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::414351767826:root"
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = var.databricks_account_id
+          }
+        }
       }
     ]
   })
