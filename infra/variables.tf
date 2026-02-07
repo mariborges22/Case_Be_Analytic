@@ -209,3 +209,30 @@ variable "enable_zorder" {
   type        = bool
   default     = true
 }
+
+# ----------------------------------------------------------------------------
+# Azure Configuration (Cross-Cloud)
+# ----------------------------------------------------------------------------
+
+variable "azure_storage_account_name" {
+  description = "Azure Storage Account Name for Data Lake"
+  type        = string
+}
+
+variable "azure_client_id" {
+  description = "Azure Service Principal Client ID"
+  type        = string
+  sensitive   = true
+}
+
+variable "azure_client_secret" {
+  description = "Azure Service Principal Client Secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "azure_tenant_id" {
+  description = "Azure Tenant ID"
+  type        = string
+  sensitive   = true
+}
