@@ -2,13 +2,18 @@
 resource "databricks_cluster" "bronze_cluster" {
   cluster_name            = "bronze-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
-  node_type_id            = "m5.xlarge"
+  node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   
-  autoscale {
-    min_workers = 1
-    max_workers = 3
+  spark_conf = {
+    "spark.databricks.delta.preview.enabled" = "true"
+    "spark.databricks.cluster.profile"       = "singleNode"
+    "spark.master"                           = "local[*]"
+  }
+
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
   }
 
   aws_attributes {
@@ -17,14 +22,6 @@ resource "databricks_cluster" "bronze_cluster" {
     first_on_demand        = 1
     spot_bid_price_percent = 100
     instance_profile_arn   = databricks_instance_profile.s3_access.id
-
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
-  }
-
-  spark_conf = {
-    "spark.databricks.delta.preview.enabled" = "true"
   }
 }
 
@@ -32,13 +29,18 @@ resource "databricks_cluster" "bronze_cluster" {
 resource "databricks_cluster" "silver_cluster" {
   cluster_name            = "silver-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
-  node_type_id            = "m5.xlarge"
+  node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   
-  autoscale {
-    min_workers = 1
-    max_workers = 3
+  spark_conf = {
+    "spark.databricks.delta.preview.enabled" = "true"
+    "spark.databricks.cluster.profile"       = "singleNode"
+    "spark.master"                           = "local[*]"
+  }
+
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
   }
 
   aws_attributes {
@@ -47,14 +49,6 @@ resource "databricks_cluster" "silver_cluster" {
     first_on_demand        = 1
     spot_bid_price_percent = 100
     instance_profile_arn   = databricks_instance_profile.s3_access.id
-
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
-  }
-
-  spark_conf = {
-    "spark.databricks.delta.preview.enabled" = "true"
   }
 }
 
@@ -62,13 +56,18 @@ resource "databricks_cluster" "silver_cluster" {
 resource "databricks_cluster" "gold_cluster" {
   cluster_name            = "gold-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
-  node_type_id            = "m5.xlarge"
+  node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   
-  autoscale {
-    min_workers = 1
-    max_workers = 3
+  spark_conf = {
+    "spark.databricks.delta.preview.enabled" = "true"
+    "spark.databricks.cluster.profile"       = "singleNode"
+    "spark.master"                           = "local[*]"
+  }
+
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
   }
 
   aws_attributes {
@@ -77,13 +76,5 @@ resource "databricks_cluster" "gold_cluster" {
     first_on_demand        = 1
     spot_bid_price_percent = 100
     instance_profile_arn   = databricks_instance_profile.s3_access.id
-
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
-  }
-
-  spark_conf = {
-    "spark.databricks.delta.preview.enabled" = "true"
   }
 }
