@@ -13,6 +13,34 @@ resource "aws_s3_bucket" "databricks_data" {
   }
 }
 
+# Bucket Policy para permitir acesso explícito do Role (Resolve 403 no Unity Catalog)
+resource "aws_s3_bucket_policy" "databricks_data_policy" {
+  bucket = aws_s3_bucket.databricks_data.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.databricks_s3_access.arn
+        }
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
+          "s3:GetLifecycleConfiguration"
+        ]
+        Resource = [
+          aws_s3_bucket.databricks_data.arn,
+          "${aws_s3_bucket.databricks_data.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 # Versionamento do bucket
 resource "aws_s3_bucket_versioning" "databricks_data" {
   bucket = aws_s3_bucket.databricks_data.id
@@ -88,7 +116,10 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
           "s3:PutObject",
           "s3:DeleteObject",
           "s3:ListBucket",
-          "s3:GetBucketLocation"
+          "s3:GetBucketLocation",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:GetEncryptionConfiguration"
         ]
         Resource = [
           aws_s3_bucket.databricks_data.arn,
