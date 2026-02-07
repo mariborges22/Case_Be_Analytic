@@ -1,23 +1,21 @@
 # S3 Bucket para dados
 data "aws_caller_identity" "current" {}
 
-resource "aws_s3_bucket" "databricks_data" {
-  bucket = "databricks-mco-lakehouse"
+resource "aws_s3_bucket_versioning" "databricks_data" {
+  bucket = data.aws_s3_bucket.databricks_data.id
   
-  tags = {
-    Environment = "production"
-    Purpose     = "databricks-lakehouse"
-    ManagedBy   = "terraform"
+  versioning_configuration {
+    status = "Enabled"
   }
+}
 
-  lifecycle {
-    prevent_destroy = true
-  }
+data "aws_s3_bucket" "databricks_data" {
+  bucket = "databricks-mco-lakehouse"
 }
 
 # Bucket Policy para permitir acesso explícito do Role (Resolve 403 no Unity Catalog)
 resource "aws_s3_bucket_policy" "databricks_data_policy" {
-  bucket = aws_s3_bucket.databricks_data.id
+  bucket = data.aws_s3_bucket.databricks_data.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -35,8 +33,8 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
           "s3:GetLifecycleConfiguration"
         ]
         Resource = [
-          aws_s3_bucket.databricks_data.arn,
-          "${aws_s3_bucket.databricks_data.arn}/*"
+          data.aws_s3_bucket.databricks_data.arn,
+          "${data.aws_s3_bucket.databricks_data.arn}/*"
         ]
       }
     ]
@@ -44,17 +42,11 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
 }
 
 # Versionamento do bucket
-resource "aws_s3_bucket_versioning" "databricks_data" {
-  bucket = aws_s3_bucket.databricks_data.id
-  
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+
 
 # Criptografia
 resource "aws_s3_bucket_server_side_encryption_configuration" "databricks_data" {
-  bucket = aws_s3_bucket.databricks_data.id
+  bucket = data.aws_s3_bucket.databricks_data.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -65,7 +57,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "databricks_data" 
 
 # Bloquear acesso público
 resource "aws_s3_bucket_public_access_block" "databricks_data" {
-  bucket = aws_s3_bucket.databricks_data.id
+  bucket = data.aws_s3_bucket.databricks_data.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -142,8 +134,8 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
           "s3:GetBucketPolicyStatus"
         ]
         Resource = [
-          aws_s3_bucket.databricks_data.arn,
-          "${aws_s3_bucket.databricks_data.arn}/*"
+          data.aws_s3_bucket.databricks_data.arn,
+          "${data.aws_s3_bucket.databricks_data.arn}/*"
         ]
       }
     ]

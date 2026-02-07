@@ -16,21 +16,21 @@ resource "databricks_storage_credential" "s3_credential" {
 # External Locations
 resource "databricks_external_location" "bronze" {
   name            = "bronze-location"
-  url             = "s3://${aws_s3_bucket.databricks_data.id}/bronze"
+  url             = "s3://${data.aws_s3_bucket.databricks_data.id}/bronze"
   credential_name = databricks_storage_credential.s3_credential.name
   comment         = "Bronze layer storage"
 }
 
 resource "databricks_external_location" "silver" {
   name            = "silver-location"
-  url             = "s3://${aws_s3_bucket.databricks_data.id}/silver"
+  url             = "s3://${data.aws_s3_bucket.databricks_data.id}/silver"
   credential_name = databricks_storage_credential.s3_credential.name
   comment         = "Silver layer storage"
 }
 
 resource "databricks_external_location" "gold" {
   name            = "gold-location"
-  url             = "s3://${aws_s3_bucket.databricks_data.id}/gold"
+  url             = "s3://${data.aws_s3_bucket.databricks_data.id}/gold"
   credential_name = databricks_storage_credential.s3_credential.name
   comment         = "Gold layer storage"
 }
