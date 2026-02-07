@@ -5,28 +5,13 @@
 resource "databricks_job" "mco_pipeline" {
   name = "MCO-Medallion-Pipeline"
 
-  # Common cluster configuration for all tasks
-  # This makes each task independent and easier to debug
+  # Serverless compute is used for all tasks to comply with workspace restrictions
   
   task {
     task_key = "bronze_extraction"
     
-    new_cluster {
-      num_workers   = 1 # Job Clusters can be fixed size for predictable cost
-      spark_version = var.cluster_spark_version
-      node_type_id  = "i3.xlarge"
-      
-      runtime_engine     = "STANDARD"
-      data_security_mode = "USER_ISOLATION"
-
-      aws_attributes {
-        availability = "ON_DEMAND"
-      }
-
-      spark_conf = {
-        "spark.databricks.delta.preview.enabled" = "true"
-      }
-    }
+    # Modeled for serverless - Omitting VM specific attributes
+    # The workspace handles compute automatically
     
     spark_python_task {
       python_file = "scraping/mco_extractor.py"
@@ -48,23 +33,6 @@ resource "databricks_job" "mco_pipeline" {
     task_key = "silver_refinement"
     depends_on { task_key = "bronze_extraction" }
     
-    new_cluster {
-      num_workers   = 1
-      spark_version = var.cluster_spark_version
-      node_type_id  = "i3.xlarge"
-      
-      runtime_engine     = "STANDARD"
-      data_security_mode = "USER_ISOLATION"
-
-      aws_attributes {
-        availability = "ON_DEMAND"
-      }
-
-      spark_conf = {
-        "spark.databricks.delta.preview.enabled" = "true"
-      }
-    }
-    
     spark_python_task {
       python_file = "pipelines/silver_refinement.py"
       parameters  = [
@@ -77,23 +45,6 @@ resource "databricks_job" "mco_pipeline" {
   task {
     task_key = "gold_aggregations"
     depends_on { task_key = "silver_refinement" }
-    
-    new_cluster {
-      num_workers   = 1
-      spark_version = var.cluster_spark_version
-      node_type_id  = "i3.xlarge"
-      
-      runtime_engine     = "STANDARD"
-      data_security_mode = "USER_ISOLATION"
-
-      aws_attributes {
-        availability = "ON_DEMAND"
-      }
-
-      spark_conf = {
-        "spark.databricks.delta.preview.enabled" = "true"
-      }
-    }
     
     spark_python_task {
       python_file = "pipelines/gold_aggregations.py"
