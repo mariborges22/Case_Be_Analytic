@@ -96,16 +96,14 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Import S3 Bucket (if not imported yet)
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
-        run: |
-          terraform import aws_s3_bucket.databricks_data databricks-mco-lakehouse || true
-        continue-on-error: true
+      - name: Import S3 Bucket (if exists and not imported)
+  env:
+    DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+    DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID || '' }}
+  run: |
+    terraform import aws_s3_bucket.databricks_data databricks-mco-lakehouse 2>&1 || echo "Bucket already imported or doesn't exist"
+  continue-on-error: true
       
       - name: Terraform Plan
         id: plan
