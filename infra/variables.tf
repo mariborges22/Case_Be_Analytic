@@ -124,7 +124,7 @@ variable "cluster_spark_version" {
 variable "enable_photon" {
   description = "Enable Photon engine for performance optimization"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "cluster_autotermination_minutes" {
