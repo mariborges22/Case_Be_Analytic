@@ -5,6 +5,12 @@
 resource "databricks_job" "mco_pipeline" {
   name = "MCO-Medallion-Pipeline"
 
+  git_source {
+    url      = "https://github.com/mariborges22/Case_Be_Analytic.git"
+    branch   = "master"
+    provider = "gitHub"
+  }
+
   # Serverless compute is used for all tasks to comply with workspace restrictions
   
   task {

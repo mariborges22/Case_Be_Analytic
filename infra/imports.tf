@@ -24,3 +24,14 @@ import {
   to = databricks_schema.gold
   id = "mco_catalog.gold"
 }
+
+# IAM Resources
+import {
+  to = aws_iam_role.databricks_s3_access
+  id = "databricks-s3-access-role"
+}
+
+import {
+  to = aws_iam_instance_profile.databricks_s3
+  id = "databricks-s3-instance-profile"
+}
