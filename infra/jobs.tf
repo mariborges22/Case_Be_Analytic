@@ -14,7 +14,7 @@ resource "databricks_job" "mco_pipeline" {
   environment {
     environment_key = "default"
     spec {
-      client = "python"
+      client = "1"
     }
   }
 

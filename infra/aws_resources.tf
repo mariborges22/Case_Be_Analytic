@@ -63,11 +63,6 @@ resource "aws_iam_role" "databricks_s3_access" {
           AWS = "arn:aws:iam::414351767826:root"
         }
         Action = "sts:AssumeRole"
-        Condition = {
-          StringEquals = {
-            "sts:ExternalId" = var.databricks_account_id
-          }
-        }
       }
     ]
   })
