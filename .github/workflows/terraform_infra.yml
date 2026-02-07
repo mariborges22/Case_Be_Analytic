@@ -249,7 +249,7 @@ jobs:
           TF_VAR_databricks_client_secret: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
           TF_VAR_databricks_storage_root: ${{ secrets.DATABRICKS_STORAGE_ROOT }}
-          TF_VAR_databricks_access_connector_id: ${{ secrets.DATABRICKS_ACCESS_CONNECTOR_ID }}
+          TF_VAR_databricks_access_connector_id: ${{ secrets.AZURE_ACCESS_CONNECTOR_ID }}
       
       - name: Terraform Destroy
         run: |
