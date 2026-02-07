@@ -112,7 +112,7 @@ variable "gold_cluster_name" {
 variable "cluster_node_type_id" {
   description = "Node type for Databricks clusters (Azure: Standard_DS3_v2, AWS: i3.xlarge)"
   type        = string
-  default     = "Standard_DS3_v2"
+  default     = "i3.xlarge"
 }
 
 variable "cluster_spark_version" {
