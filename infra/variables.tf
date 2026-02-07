@@ -25,6 +25,12 @@ variable "databricks_client_secret" {
   sensitive   = true
 }
 
+variable "databricks_access_connector_id" {
+  description = "Azure Databricks Access Connector ID for Unity Catalog"
+  type        = string
+  sensitive   = true
+}
+
 variable "databricks_storage_root" {
   description = "Storage root URL for the Unity Catalog (e.g., abfss://container@storage.dfs.core.windows.net/)"
   type        = string

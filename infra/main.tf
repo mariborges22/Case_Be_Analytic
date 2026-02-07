@@ -28,10 +28,29 @@ provider "databricks" {
 # Unity Catalog - Main Catalog
 # ----------------------------------------------------------------------------
 
+resource "databricks_storage_credential" "sus_credential" {
+  name = var.storage_credential_name
+  azure_managed_identity {
+    access_connector_id = var.databricks_access_connector_id
+  }
+  comment = "Credential for accessing MCO Lakehouse storage"
+}
+
+resource "databricks_external_location" "mco_location" {
+  name            = "mco_external_location"
+  url             = var.databricks_storage_root
+  credential_name = databricks_storage_credential.sus_credential.name
+  comment         = "External location for MCO Catalog"
+  
+  depends_on = [
+    databricks_storage_credential.sus_credential
+  ]
+}
+
 resource "databricks_catalog" "mco_catalog" {
-  name    = var.catalog_name
+  name       = var.catalog_name
   storage_root = var.databricks_storage_root
-  comment = "MCO Catalog - Arquitetura Medalhão para dados de Mobilidade e Cidadania Operacional de Belo Horizonte"
+  comment    = "MCO Catalog - Arquitetura Medalhão para dados de Mobilidade e Cidadania Operacional de Belo Horizonte"
   
   properties = {
     environment  = var.environment
@@ -41,6 +60,10 @@ resource "databricks_catalog" "mco_catalog" {
     architecture = "medallion"
     data_source  = "mco_belo_horizonte"
   }
+  
+  depends_on = [
+    databricks_external_location.mco_location
+  ]
   
   # CRITICAL: Prevent accidental deletion of the entire catalog
   lifecycle {
