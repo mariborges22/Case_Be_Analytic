@@ -20,7 +20,8 @@ provider "aws" {
 provider "databricks" {
   # Configurado via env vars:
   # DATABRICKS_HOST
-  # DATABRICKS_TOKEN
+  # DATABRICKS_CLIENT_ID
+  # DATABRICKS_CLIENT_SECRET
 }
 
 data "databricks_spark_version" "latest_lts" {
