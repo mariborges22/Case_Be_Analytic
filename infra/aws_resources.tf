@@ -22,7 +22,7 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = aws_iam_role.databricks_s3_access.arn
+          AWS = data.aws_iam_role.databricks_s3_access.arn
         }
         Action = [
           "s3:GetObject",
@@ -66,56 +66,14 @@ resource "aws_s3_bucket_public_access_block" "databricks_data" {
 }
 
 # IAM Role para Databricks acessar S3
-resource "aws_iam_role" "databricks_s3_access" {
+data "aws_iam_role" "databricks_s3_access" {
   name = "case_be_analytic"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      },
-      {
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::414351767826:root"
-        }
-        Action = "sts:AssumeRole"
-        Condition = {
-          StringEquals = {
-            "sts:ExternalId" = var.databricks_account_id
-          }
-        }
-      },
-      {
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-        }
-        Action = "sts:AssumeRole"
-        Condition = {
-          ArnEquals = {
-            "aws:PrincipalArn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/databricks-s3-access-role"
-          }
-        }
-      }
-    ]
-  })
-
-  tags = {
-    Name      = "databricks-s3-access"
-    ManagedBy = "terraform"
-  }
 }
 
 # Policy para acesso S3
 resource "aws_iam_role_policy" "databricks_s3_policy" {
   name = "databricks-s3-access-policy"
-  role = aws_iam_role.databricks_s3_access.id
+  role = data.aws_iam_role.databricks_s3_access.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -145,7 +103,7 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
 # Instance Profile para anexar aos clusters
 resource "aws_iam_instance_profile" "databricks_s3" {
   name = "databricks-s3-instance-profile"
-  role = aws_iam_role.databricks_s3_access.name
+  role = data.aws_iam_role.databricks_s3_access.name
 }
 
 # Registrar Instance Profile no Databricks

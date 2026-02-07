@@ -22,10 +22,7 @@ import {
 }
 
 # IAM Resources
-import {
-  to = aws_iam_role.databricks_s3_access
-  id = "case_be_analytic"
-}
+
 
 import {
   to = aws_iam_instance_profile.databricks_s3
