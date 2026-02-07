@@ -27,12 +27,10 @@ resource "databricks_cluster" "bronze_cluster" {
     "fs.azure.account.oauth2.client.secret"                     = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_secret.key}}}"
     "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
 
-    "spark.databricks.delta.preview.enabled"           = "true"
-    "spark.databricks.delta.optimizeWrite.enabled"     = var.enable_delta_optimize ? "true" : "false"
-    "spark.databricks.delta.autoCompact.enabled"       = var.enable_delta_auto_compact ? "true" : "false"
-    "spark.databricks.delta.zorder.enabled"            = var.enable_zorder ? "true" : "false"
-    "spark.databricks.delta.properties.defaults.enableChangeDataFeed" = "true"
-    "spark.sql.files.maxPartitionBytes"                = "134217728"
+    "spark.databricks.cluster.profile" = "singleNode"
+    "spark.master"                     = "local[*]"
+    "spark.databricks.delta.preview.enabled" = "true"
+    "spark.sql.files.maxPartitionBytes"      = "134217728"
   }
   
   spark_env_vars = {
