@@ -200,6 +200,8 @@ resource "databricks_cluster" "bronze_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
+    ebs_volume_count       = 1
+    ebs_volume_size        = 32
   }
   
   spark_conf = {
@@ -275,6 +277,8 @@ resource "databricks_cluster" "silver_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
+    ebs_volume_count       = 1
+    ebs_volume_size        = 32
   }
   
   spark_conf = {
@@ -347,6 +351,8 @@ resource "databricks_cluster" "gold_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
+    ebs_volume_count       = 1
+    ebs_volume_size        = 32
   }
   
   spark_conf = {
