@@ -194,9 +194,11 @@ resource "databricks_cluster" "bronze_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
+  single_user_name   = var.owner
 
   aws_attributes {
-    availability    = "ON_DEMAND"
+    availability     = "ON_DEMAND"
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
     ebs_volume_count = 1
     ebs_volume_size  = 32
   }
@@ -268,13 +270,13 @@ resource "databricks_cluster" "silver_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
+  single_user_name   = var.owner
 
   aws_attributes {
-    availability           = "SPOT_WITH_FALLBACK"
-    first_on_demand        = 1
-    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
-    ebs_volume_count       = 1
-    ebs_volume_size        = 32
+    availability     = "ON_DEMAND"
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
   }
   
   spark_conf = {
@@ -341,13 +343,13 @@ resource "databricks_cluster" "gold_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
+  single_user_name   = var.owner
 
   aws_attributes {
-    availability           = "SPOT_WITH_FALLBACK"
-    first_on_demand        = 1
-    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
-    ebs_volume_count       = 1
-    ebs_volume_size        = 32
+    availability     = "ON_DEMAND"
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
   }
   
   spark_conf = {
