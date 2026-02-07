@@ -3,12 +3,12 @@
 # ============================================================================
 
 output "s3_bucket_name" {
-  value       = aws_s3_bucket.databricks_data.id
+  value       = data.aws_s3_bucket.databricks_data.id
   description = "Nome do bucket S3 para os dados do Lakehouse"
 }
 
 output "s3_bucket_arn" {
-  value       = aws_s3_bucket.databricks_data.arn
+  value       = data.aws_s3_bucket.databricks_data.arn
   description = "ARN do bucket S3"
 }
 
@@ -40,7 +40,7 @@ output "job_id" {
 output "medallion_architecture_summary" {
   description = "Resumo da arquitetura Medalhão na AWS"
   value = {
-    storage       = "S3 (s3://${aws_s3_bucket.databricks_data.id})"
+    storage       = "S3 (s3://${data.aws_s3_bucket.databricks_data.id})"
     region        = "us-east-1"
     catalog       = var.catalog_name
     iam_profile   = aws_iam_instance_profile.databricks_s3.name
