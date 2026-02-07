@@ -91,6 +91,11 @@ resource "aws_iam_role" "databricks_s3_access" {
           AWS = "arn:aws:iam::414351767826:root"
         }
         Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = var.databricks_account_id
+          }
+        }
       }
     ]
   })
@@ -119,7 +124,8 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
           "s3:GetBucketLocation",
           "s3:GetLifecycleConfiguration",
           "s3:GetBucketPublicAccessBlock",
-          "s3:GetEncryptionConfiguration"
+          "s3:GetEncryptionConfiguration",
+          "s3:GetBucketPolicyStatus"
         ]
         Resource = [
           aws_s3_bucket.databricks_data.arn,
