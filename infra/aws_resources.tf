@@ -106,7 +106,7 @@ resource "aws_iam_role" "databricks_s3_access" {
         }
         Action = "sts:AssumeRole"
         Condition = {
-          StringArnEquals = {
+          ArnEquals = {
             "aws:PrincipalArn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/databricks-s3-access-role"
           }
         }
