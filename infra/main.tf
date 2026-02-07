@@ -273,9 +273,8 @@ resource "databricks_cluster" "silver_cluster" {
 
   aws_attributes {
     availability           = "SPOT_WITH_FALLBACK"
-    zone_id                = "auto"
     first_on_demand        = 1
-    spot_bid_price_percent = 100
+    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
     ebs_volume_count       = 1
     ebs_volume_size        = 32
   }
@@ -347,9 +346,8 @@ resource "databricks_cluster" "gold_cluster" {
 
   aws_attributes {
     availability           = "SPOT_WITH_FALLBACK"
-    zone_id                = "auto"
     first_on_demand        = 1
-    spot_bid_price_percent = 100
+    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
     ebs_volume_count       = 1
     ebs_volume_size        = 32
   }
