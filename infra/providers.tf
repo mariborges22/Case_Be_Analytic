@@ -1,18 +1,24 @@
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= 1.0"
   
   required_providers {
     databricks = {
       source  = "databricks/databricks"
-      version = "1.50.0"
+      version = "~> 1.0"
+    }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
     }
   }
 }
 
-provider "databricks" {
-  host          = var.databricks_host
-  client_id     = var.databricks_client_id
-  client_secret = var.databricks_client_secret
+provider "aws" {
+  region = "us-east-1"  # Ajuste conforme necessário
 }
 
-data "databricks_current_user" "me" {}
+provider "databricks" {
+  # Configurado via env vars:
+  # DATABRICKS_HOST
+  # DATABRICKS_TOKEN
+}

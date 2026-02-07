@@ -8,37 +8,13 @@
 # ----------------------------------------------------------------------------
 
 variable "databricks_host" {
-  description = "Databricks workspace URL (e.g., https://adb-123456789.azuredatabricks.net)"
-  type        = string
-  sensitive   = true
-}
-
-variable "databricks_client_id" {
-  description = "Databricks Service Principal Client ID for OAuth authentication"
-  type        = string
-  sensitive   = true
-}
-
-variable "databricks_client_secret" {
-  description = "Databricks Service Principal Client Secret for OAuth authentication"
-  type        = string
-  sensitive   = true
-}
-
-variable "databricks_access_connector_id" {
-  description = "Azure Databricks Access Connector ID for Unity Catalog"
-  type        = string
-  sensitive   = true
-}
-
-variable "databricks_storage_root" {
-  description = "Storage root URL for the Unity Catalog (e.g., abfss://container@storage.dfs.core.windows.net/)"
+  description = "Databricks workspace URL"
   type        = string
   sensitive   = true
 }
 
 variable "databricks_account_id" {
-  description = "Databricks account ID for Unity Catalog management"
+  description = "Databricks account ID"
   type        = string
   sensitive   = true
 }
@@ -208,31 +184,4 @@ variable "enable_zorder" {
   description = "Enable Z-Ordering for Delta tables"
   type        = bool
   default     = true
-}
-
-# ----------------------------------------------------------------------------
-# Azure Configuration (Cross-Cloud)
-# ----------------------------------------------------------------------------
-
-variable "azure_storage_account_name" {
-  description = "Azure Storage Account Name for Data Lake"
-  type        = string
-}
-
-variable "azure_client_id" {
-  description = "Azure Service Principal Client ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_client_secret" {
-  description = "Azure Service Principal Client Secret"
-  type        = string
-  sensitive   = true
-}
-
-variable "azure_tenant_id" {
-  description = "Azure Tenant ID"
-  type        = string
-  sensitive   = true
 }

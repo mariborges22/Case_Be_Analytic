@@ -24,11 +24,7 @@ resource "databricks_job" "mco_pipeline" {
       }
 
       spark_conf = {
-        "fs.azure.account.auth.type"                = "OAuth"
-        "fs.azure.account.oauth.provider.type"      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-        "fs.azure.account.oauth2.client.id"         = "{{secrets/azure-storage-scope/azure-client-id}}"
-        "fs.azure.account.oauth2.client.secret"     = "{{secrets/azure-storage-scope/azure-client-secret}}"
-        "fs.azure.account.oauth2.client.endpoint"   = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/azure-tenant-id}}/oauth2/token"
+        "spark.databricks.delta.preview.enabled" = "true"
       }
     }
     
@@ -65,11 +61,7 @@ resource "databricks_job" "mco_pipeline" {
       }
 
       spark_conf = {
-        "fs.azure.account.auth.type"            = "OAuth"
-        "fs.azure.account.oauth.provider.type"  = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-        "fs.azure.account.oauth2.client.id"     = "{{secrets/azure-storage-scope/azure-client-id}}"
-        "fs.azure.account.oauth2.client.secret" = "{{secrets/azure-storage-scope/azure-client-secret}}"
-        "fs.azure.account.oauth2.client.endpoint" = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/azure-tenant-id}}/oauth2/token"
+        "spark.databricks.delta.preview.enabled" = "true"
       }
     }
     
@@ -99,11 +91,7 @@ resource "databricks_job" "mco_pipeline" {
       }
 
       spark_conf = {
-        "fs.azure.account.auth.type"            = "OAuth"
-        "fs.azure.account.oauth.provider.type"  = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-        "fs.azure.account.oauth2.client.id"     = "{{secrets/azure-storage-scope/azure-client-id}}"
-        "fs.azure.account.oauth2.client.secret" = "{{secrets/azure-storage-scope/azure-client-secret}}"
-        "fs.azure.account.oauth2.client.endpoint" = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/azure-tenant-id}}/oauth2/token"
+        "spark.databricks.delta.preview.enabled" = "true"
       }
     }
     
