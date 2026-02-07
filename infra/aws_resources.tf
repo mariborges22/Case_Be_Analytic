@@ -7,6 +7,10 @@ resource "aws_s3_bucket" "databricks_data" {
     Purpose     = "databricks-lakehouse"
     ManagedBy   = "terraform"
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Versionamento do bucket

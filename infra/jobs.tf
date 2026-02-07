@@ -21,12 +21,6 @@ resource "databricks_job" "mco_pipeline" {
         "--schema-name", var.bronze_schema
       ]
     }
-    
-    library {
-      pypi {
-        package = "requests>=2.31.0"
-      }
-    }
   }
   
   task {
