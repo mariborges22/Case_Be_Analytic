@@ -2,15 +2,25 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket_versioning" "databricks_data" {
-  bucket = data.aws_s3_bucket.databricks_data.id
+  bucket = aws_s3_bucket.databricks_data.id
   
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-data "aws_s3_bucket" "databricks_data" {
+resource "aws_s3_bucket" "databricks_data" {
   bucket = "databricks-mco-lakehouse"
+  
+  tags = {
+    Environment = "production"
+    Purpose     = "databricks-lakehouse"
+    ManagedBy   = "terraform"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Bucket Policy para permitir acesso explícito do Role (Resolve 403 no Unity Catalog)
@@ -21,9 +31,7 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
     Statement = [
       {
         Effect = "Allow"
-        Principal = {
-          AWS = data.aws_iam_role.databricks_s3_access.arn
-        }
+          AWS = aws_iam_role.databricks_s3_access.arn
         Action = [
           "s3:GetObject",
           "s3:PutObject",
@@ -66,14 +74,56 @@ resource "aws_s3_bucket_public_access_block" "databricks_data" {
 }
 
 # IAM Role para Databricks acessar S3
-data "aws_iam_role" "databricks_s3_access" {
+resource "aws_iam_role" "databricks_s3_access" {
   name = "case_be_analytic"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::414351767826:root"
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = var.databricks_account_id
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          ArnEquals = {
+            "aws:PrincipalArn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/databricks-s3-access-role"
+          }
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Name      = "databricks-s3-access"
+    ManagedBy = "terraform"
+  }
 }
 
 # Policy para acesso S3
 resource "aws_iam_role_policy" "databricks_s3_policy" {
   name = "databricks-s3-access-policy"
-  role = data.aws_iam_role.databricks_s3_access.id
+  role = aws_iam_role.databricks_s3_access.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -103,7 +153,7 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
 # Instance Profile para anexar aos clusters
 resource "aws_iam_instance_profile" "databricks_s3" {
   name = "databricks-s3-instance-profile"
-  role = data.aws_iam_role.databricks_s3_access.name
+  role = aws_iam_role.databricks_s3_access.name
 }
 
 # Registrar Instance Profile no Databricks
