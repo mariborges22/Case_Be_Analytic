@@ -14,12 +14,11 @@ resource "databricks_cluster" "bronze_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = var.data_security_mode
-  single_user_name   = data.databricks_current_user.me.user_name
+  data_security_mode = "USER_ISOLATION" # Shared mode bypasses single_user_name requirement
 
   aws_attributes {
     availability     = "ON_DEMAND"
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    zone_id          = "auto"
     ebs_volume_count = 1
     ebs_volume_size  = 32
   }
@@ -73,8 +72,7 @@ resource "databricks_cluster" "silver_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = var.data_security_mode
-  single_user_name   = data.databricks_current_user.me.user_name
+  data_security_mode = "USER_ISOLATION"
 
   aws_attributes {
     availability    = "ON_DEMAND"
@@ -133,12 +131,11 @@ resource "databricks_cluster" "gold_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = var.data_security_mode
-  single_user_name   = data.databricks_current_user.me.user_name
+  data_security_mode = "USER_ISOLATION"
 
   aws_attributes {
     availability     = "ON_DEMAND"
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    zone_id          = "auto"
     ebs_volume_count = 1
     ebs_volume_size  = 32
   }
