@@ -158,7 +158,7 @@ resource "databricks_cluster" "bronze_cluster" {
     LAYER                      = "bronze"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
-    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
+    DATABRICKS_TOKEN   = var.databricks_token
   }
   
   custom_tags = {
@@ -216,7 +216,7 @@ resource "databricks_cluster" "silver_cluster" {
     LAYER                      = "silver"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
-    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
+    DATABRICKS_TOKEN   = var.databricks_token
   }
   
   custom_tags = {
@@ -272,7 +272,7 @@ resource "databricks_cluster" "gold_cluster" {
     LAYER                      = "gold"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
-    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
+    DATABRICKS_TOKEN   = var.databricks_token
   }
   
   custom_tags = {
