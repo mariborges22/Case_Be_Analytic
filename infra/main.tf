@@ -21,7 +21,7 @@ terraform {
 provider "databricks" {
   host          = var.databricks_host
   client_id     = var.databricks_client_id
-  token = var.databricks_token
+  client_secret = var.databricks_client_secret
 }
 
 # ----------------------------------------------------------------------------
@@ -158,7 +158,7 @@ resource "databricks_cluster" "bronze_cluster" {
     LAYER                      = "bronze"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
-    DATABRICKS_TOKEN   = var.databricks_token
+    DATABRICKS_CLIENT_SECRET   = var.databricks_client_secret
   }
   
   custom_tags = {

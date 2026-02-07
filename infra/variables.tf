@@ -19,7 +19,7 @@ variable "databricks_client_id" {
   sensitive   = true
 }
 
-variable "databricks_token" {
+variable "databricks_client_secret" {
   description = "Databricks Service Principal Client Secret for OAuth authentication"
   type        = string
   sensitive   = true
