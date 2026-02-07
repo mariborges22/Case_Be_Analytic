@@ -3,7 +3,7 @@ resource "databricks_storage_credential" "s3_credential" {
   name = "s3-storage-credential"
   
   aws_iam_role {
-    role_arn = aws_iam_role.databricks_s3_access.arn
+    role_arn = data.aws_iam_role.databricks_s3_access.arn
   }
   
   comment = "S3 access for Unity Catalog"
