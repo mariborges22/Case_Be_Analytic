@@ -172,8 +172,6 @@ resource "databricks_cluster" "bronze_cluster" {
   # Lifecycle: Ignore external changes to prevent unnecessary recreations
   lifecycle {
     ignore_changes = [
-      # Ignore system-managed tags
-      default_tags,
       # Ignore automatic version updates
       spark_version,
     ]
@@ -216,7 +214,6 @@ resource "databricks_cluster" "silver_cluster" {
     LAYER                      = "silver"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
-    DATABRICKS_TOKEN   = var.databricks_token
   }
   
   custom_tags = {
@@ -272,7 +269,6 @@ resource "databricks_cluster" "gold_cluster" {
     LAYER                      = "gold"
     ENVIRONMENT                = var.environment
     DATABRICKS_CLIENT_ID       = var.databricks_client_id
-    DATABRICKS_TOKEN   = var.databricks_token
   }
   
   custom_tags = {
