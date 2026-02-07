@@ -24,6 +24,8 @@ provider "databricks" {
   client_secret = var.databricks_client_secret
 }
 
+data "databricks_current_user" "me" {}
+
 # ----------------------------------------------------------------------------
 # Unity Catalog - Main Catalog
 # ----------------------------------------------------------------------------
@@ -129,13 +131,13 @@ resource "databricks_schema" "gold" {
   name         = var.gold_schema
   comment      = "Camada Ouro: Agregados de negócio e modelagem dimensional (Star Schema)"
   
-  properties = {
-    layer        = "gold"
-    data_type    = "aggregated"
-    modeling     = "star_schema"
-    optimization = "zorder,partitioning"
-    description  = "Dados otimizados para consumo de negócio e analytics"
-  }
+  # properties = {
+  #   layer        = "gold"
+  #   data_type    = "aggregated"
+  #   modeling     = "star_schema"
+  #   optimization = "zorder,partitioning"
+  #   description  = "Dados otimizados para consumo de negócio e analytics"
+  # }
   
   # CRITICAL: Prevent accidental deletion of gold schema
   lifecycle {
@@ -194,7 +196,7 @@ resource "databricks_cluster" "bronze_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
-  single_user_name   = var.owner
+  single_user_name   = data.databricks_current_user.me.user_name
 
   aws_attributes {
     availability     = "ON_DEMAND"
@@ -270,7 +272,7 @@ resource "databricks_cluster" "silver_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
-  single_user_name   = var.owner
+  single_user_name   = data.databricks_current_user.me.user_name
 
   aws_attributes {
     availability     = "ON_DEMAND"
@@ -343,7 +345,7 @@ resource "databricks_cluster" "gold_cluster" {
   
   # Unity Catalog security
   data_security_mode = var.data_security_mode
-  single_user_name   = var.owner
+  single_user_name   = data.databricks_current_user.me.user_name
 
   aws_attributes {
     availability     = "ON_DEMAND"
