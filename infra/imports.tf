@@ -6,7 +6,7 @@
 # S3 Bucket
 import {
   to = aws_s3_bucket.databricks_data
-  id = "databricks-mco-lakehouse"
+  id = "case-be-analytic"
 }
 
 # Unity Catalog Schemas
