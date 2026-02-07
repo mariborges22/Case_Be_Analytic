@@ -3,6 +3,7 @@ resource "databricks_cluster" "bronze_cluster" {
   cluster_name            = "bronze-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
   node_type_id            = "m5.xlarge"
+  data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   
   autoscale {
@@ -32,6 +33,7 @@ resource "databricks_cluster" "silver_cluster" {
   cluster_name            = "silver-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
   node_type_id            = "m5.xlarge"
+  data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   
   autoscale {
@@ -61,6 +63,7 @@ resource "databricks_cluster" "gold_cluster" {
   cluster_name            = "gold-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
   node_type_id            = "m5.xlarge"
+  data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   
   autoscale {

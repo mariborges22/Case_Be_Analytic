@@ -1,4 +1,6 @@
 # S3 Bucket para dados
+data "aws_caller_identity" "current" {}
+
 resource "aws_s3_bucket" "databricks_data" {
   bucket = "databricks-mco-lakehouse"
   
@@ -94,6 +96,18 @@ resource "aws_iam_role" "databricks_s3_access" {
         Condition = {
           StringEquals = {
             "sts:ExternalId" = var.databricks_account_id
+          }
+        }
+      },
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action = "sts:AssumeRole"
+        Condition = {
+          StringArnEquals = {
+            "aws:PrincipalArn" = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/databricks-s3-access-role"
           }
         }
       }
