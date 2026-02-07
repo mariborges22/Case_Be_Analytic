@@ -179,7 +179,7 @@ variable "project_name" {
 variable "owner" {
   description = "Owner or team responsible for the infrastructure"
   type        = string
-  default     = "data-engineering-team"
+  default     = "mariborgesdatascientist@gmail.com" # Altere para seu e-mail do Databricks
 }
 
 variable "cost_center" {

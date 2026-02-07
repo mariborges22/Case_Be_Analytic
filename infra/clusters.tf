@@ -77,8 +77,8 @@ resource "databricks_cluster" "silver_cluster" {
   single_user_name   = data.databricks_current_user.me.user_name
 
   aws_attributes {
-    availability     = "ON_DEMAND"
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    availability    = "ON_DEMAND"
+    zone_id         = "auto"
     ebs_volume_count = 1
     ebs_volume_size  = 32
   }
