@@ -7,6 +7,11 @@ output "s3_bucket_name" {
   description = "Nome do bucket S3 para os dados do Lakehouse"
 }
 
+output "s3_bucket_arn" {
+  value       = aws_s3_bucket.databricks_data.arn
+  description = "ARN do bucket S3"
+}
+
 output "instance_profile_arn" {
   value       = aws_iam_instance_profile.databricks_s3.arn
   description = "ARN do Instance Profile usado para acesso ao S3"

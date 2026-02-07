@@ -93,19 +93,3 @@ resource "aws_iam_instance_profile" "databricks_s3" {
   name = "databricks-s3-instance-profile"
   role = aws_iam_role.databricks_s3_access.name
 }
-
-# Outputs úteis
-output "s3_bucket_name" {
-  value       = aws_s3_bucket.databricks_data.id
-  description = "Nome do bucket S3"
-}
-
-output "s3_bucket_arn" {
-  value       = aws_s3_bucket.databricks_data.arn
-  description = "ARN do bucket S3"
-}
-
-output "instance_profile_arn" {
-  value       = aws_iam_instance_profile.databricks_s3.arn
-  description = "ARN do instance profile"
-}
