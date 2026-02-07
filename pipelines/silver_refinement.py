@@ -67,10 +67,11 @@ def refine_to_silver(
 
     # Filtragem de Qualidade (usando colunas tipadas)
     df_valid = (
-        df_typed
-        .filter(F.col("QTDE_PASSAGEIROS_INT").isNotNull()) # Remove não-numéricos
-        .filter(F.col("QTDE_PASSAGEIROS_INT") >= 0)        # Remove negativos
-        .drop("DATA", "QTDE_PASSAGEIROS")                  # Remove colunas originais (strings)
+        df_typed.filter(
+            F.col("QTDE_PASSAGEIROS_INT").isNotNull()
+        )  # Remove não-numéricos
+        .filter(F.col("QTDE_PASSAGEIROS_INT") >= 0)  # Remove negativos
+        .drop("DATA", "QTDE_PASSAGEIROS")  # Remove colunas originais (strings)
         .withColumnRenamed("DATA_DATE", "DATA")
         .withColumnRenamed("QTDE_PASSAGEIROS_INT", "QTDE_PASSAGEIROS")
     )

@@ -56,7 +56,7 @@ def extract_mco_data(
     # Lê CSV com Spark (inferSchema para detectar tipos automaticamente)
     df = (
         spark.read.option("header", "true")
-        .option("inferSchema", "false") # Raw data should be all strings
+        .option("inferSchema", "false")  # Raw data should be all strings
         .option("encoding", "UTF-8")
         .option("sep", ",")
         .csv(str(temp_csv))
