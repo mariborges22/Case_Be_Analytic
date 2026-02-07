@@ -152,7 +152,7 @@ resource "databricks_schema" "gold" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_secret_scope" "azure_credentials" {
-  name = "azure-storage-scope"
+  name = "azure-storage-scope-tf"
 }
 
 resource "databricks_secret" "azure_client_id" {
