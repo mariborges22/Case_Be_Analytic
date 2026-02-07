@@ -1,4 +1,18 @@
 # ----------------------------------------------------------------------------
+# Unity Catalog - Main Catalog
+# ----------------------------------------------------------------------------
+
+resource "databricks_catalog" "mco_catalog" {
+  name         = var.catalog_name
+  storage_root = "s3://${aws_s3_bucket.databricks_data.id}/"
+  comment      = "Catálogo principal do Lakehouse MCO (Transporte e Mobilidade)"
+
+  properties = {
+    purpose = "analytics"
+  }
+}
+
+# ----------------------------------------------------------------------------
 # Bronze Layer (Raw Data) - Immutable Ingestion
 # ----------------------------------------------------------------------------
 

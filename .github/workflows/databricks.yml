@@ -74,14 +74,7 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Import S3 Bucket (if exists and not imported)
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID || '' }}
-        run: |
-          terraform import aws_s3_bucket.databricks_data databricks-mco-lakehouse 2>&1 || echo "Bucket already imported or doesn't exist"
-        continue-on-error: true
+
       
       - name: Terraform Plan
         id: plan

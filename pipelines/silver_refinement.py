@@ -58,30 +58,36 @@ def refine_to_silver(
         )
         # Remove registros com campos críticos nulos
         .filter(F.col("LINHA").isNotNull()).filter(F.col("DATA").isNotNull())
-        # CRITICAL: Trata nulos em QTDE_PASSAGEIROS
-        # Estratégia: Remove registros com passageiros nulos (dados inválidos)
-        .filter(F.col("QTDE_PASSAGEIROS").isNotNull())
-        # Remove valores negativos (dados inconsistentes)
-        .filter(F.col("QTDE_PASSAGEIROS") >= 0)
     )
 
-    # Cast de tipos (ajustar conforme schema real do MCO)
+    # Cast de tipos (CRITICAL: Fazer antes de filtros numéricos)
     df_typed = df_clean.withColumn(
-        "DATA", F.to_date(F.col("DATA"), "yyyy-MM-dd")
-    ).withColumn("QTDE_PASSAGEIROS", F.col("QTDE_PASSAGEIROS").cast(IntegerType()))
+        "DATA_DATE", F.to_date(F.col("DATA"), "yyyy-MM-dd")
+    ).withColumn("QTDE_PASSAGEIROS_INT", F.col("QTDE_PASSAGEIROS").cast(IntegerType()))
+
+    # Filtragem de Qualidade (usando colunas tipadas)
+    df_valid = (
+        df_typed
+        .filter(F.col("QTDE_PASSAGEIROS_INT").isNotNull()) # Remove não-numéricos
+        .filter(F.col("QTDE_PASSAGEIROS_INT") >= 0)        # Remove negativos
+        .drop("DATA", "QTDE_PASSAGEIROS")                  # Remove colunas originais (strings)
+        .withColumnRenamed("DATA_DATE", "DATA")
+        .withColumnRenamed("QTDE_PASSAGEIROS_INT", "QTDE_PASSAGEIROS")
+    )
 
     # Normaliza strings (trim e uppercase para consistência)
+    # Ensure we only normalize columns that are currently Strings in df_valid
     string_columns = [
         field.name
-        for field in df_typed.schema.fields
+        for field in df_valid.schema.fields
         if isinstance(field.dataType, StringType)
     ]
 
     for col_name in string_columns:
-        df_typed = df_typed.withColumn(col_name, F.trim(F.upper(F.col(col_name))))
+        df_valid = df_valid.withColumn(col_name, F.trim(F.upper(F.col(col_name))))
 
     # Adiciona timestamp de processamento
-    df_silver = df_typed.withColumn("_processed_at", F.current_timestamp())
+    df_silver = df_valid.withColumn("_processed_at", F.current_timestamp())
 
     # Validações de qualidade
     clean_count = df_silver.count()
