@@ -9,17 +9,17 @@
 
 output "mco_catalog_id" {
   description = "MCO Unity Catalog ID"
-  value       = databricks_catalog.mco_catalog.id
+  value       = data.databricks_catalog.mco_catalog.id
 }
 
 output "mco_catalog_name" {
   description = "MCO Unity Catalog name for use in DABs and workflows"
-  value       = databricks_catalog.mco_catalog.name
+  value       = data.databricks_catalog.mco_catalog.name
 }
 
 output "mco_catalog_full_name" {
   description = "MCO Unity Catalog fully qualified name"
-  value       = databricks_catalog.mco_catalog.name
+  value       = data.databricks_catalog.mco_catalog.name
 }
 
 # ----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ output "bronze_mco_schema_id" {
 
 output "bronze_mco_schema_name" {
   description = "Bronze schema fully qualified name for MCO raw data"
-  value       = "${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
+  value       = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
 }
 
 output "silver_mco_schema_id" {
@@ -44,7 +44,7 @@ output "silver_mco_schema_id" {
 
 output "silver_mco_schema_name" {
   description = "Silver schema fully qualified name for MCO validated data"
-  value       = "${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
+  value       = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
 }
 
 output "gold_mco_schema_id" {
@@ -54,7 +54,7 @@ output "gold_mco_schema_id" {
 
 output "gold_mco_schema_name" {
   description = "Gold schema fully qualified name for MCO business aggregates"
-  value       = "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
+  value       = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
 }
 
 # ----------------------------------------------------------------------------
@@ -145,18 +145,18 @@ output "delta_maintenance_commands" {
     📊 DELTA TABLE MAINTENANCE COMMANDS (MCO Catalog):
     
     # OPTIMIZE: Compacts small files into fewer large files
-    OPTIMIZE ${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}.mco_raw
-    OPTIMIZE ${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}.mco_clean ZORDER BY (LINHA, DATA)
-    OPTIMIZE ${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.fact_passageiros ZORDER BY (LINHA)
+    OPTIMIZE ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}.mco_raw
+    OPTIMIZE ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}.mco_clean ZORDER BY (LINHA, DATA)
+    OPTIMIZE ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.fact_passageiros ZORDER BY (LINHA)
     
     # VACUUM: Removes old data files (default retention: 7 days)
-    VACUUM ${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}.mco_raw RETAIN 168 HOURS
-    VACUUM ${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}.mco_clean RETAIN 168 HOURS
-    VACUUM ${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.fact_passageiros RETAIN 168 HOURS
+    VACUUM ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}.mco_raw RETAIN 168 HOURS
+    VACUUM ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}.mco_clean RETAIN 168 HOURS
+    VACUUM ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.fact_passageiros RETAIN 168 HOURS
     
     # Dimension Tables
-    OPTIMIZE ${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_linha
-    OPTIMIZE ${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_data ZORDER BY (ano, mes)
+    OPTIMIZE ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_linha
+    OPTIMIZE ${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_data ZORDER BY (ano, mes)
     
     ⚠️  Never run VACUUM with retention < 7 days in production without disabling time travel!
   EOT
@@ -166,21 +166,21 @@ output "mco_medallion_architecture_summary" {
   description = "Summary of MCO Medallion Architecture implementation"
   value       = {
     bronze = {
-      schema      = "${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
+      schema      = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
       cluster_id  = databricks_cluster.bronze_cluster.id
       purpose     = "Raw MCO data ingestion from Belo Horizonte (immutable)"
       tables      = ["mco_raw"]
       protection  = "prevent_destroy = true"
     }
     silver = {
-      schema      = "${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
+      schema      = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
       cluster_id  = databricks_cluster.silver_cluster.id
       purpose     = "Cleaned and validated MCO data (single source of truth)"
       tables      = ["mco_clean"]
       protection  = "prevent_destroy = true"
     }
     gold = {
-      schema      = "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
+      schema      = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
       cluster_id  = databricks_cluster.gold_cluster.id
       purpose     = "MCO business aggregates and star schema"
       tables      = ["fact_passageiros", "dim_linha", "dim_data"]
@@ -202,21 +202,21 @@ output "mco_data_lineage" {
       format      = "CSV"
     }
     bronze = {
-      table       = "${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}.mco_raw"
+      table       = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}.mco_raw"
       format      = "Delta"
       metadata    = ["_ingestion_timestamp", "_source_url", "_ingestion_date"]
     }
     silver = {
-      table       = "${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}.mco_clean"
+      table       = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}.mco_clean"
       format      = "Delta"
       operations  = ["deduplication", "null_handling", "type_casting", "normalization"]
       metadata    = ["_processed_at"]
     }
     gold = {
-      fact_table  = "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.fact_passageiros"
+      fact_table  = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.fact_passageiros"
       dimensions  = [
-        "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_linha",
-        "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_data"
+        "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_linha",
+        "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}.dim_data"
       ]
       format      = "Delta"
       optimization = ["ZORDER BY LINHA", "PARTITION BY DATA"]

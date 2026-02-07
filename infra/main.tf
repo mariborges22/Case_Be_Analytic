@@ -81,7 +81,7 @@ data "databricks_catalog" "mco_catalog" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "bronze" {
-  catalog_name = databricks_catalog.mco_catalog.name
+  catalog_name = data.databricks_catalog.mco_catalog.name
   name         = var.bronze_schema
   comment      = "Camada Bronze: Dados brutos e imutáveis do MCO (ELT - Extract & Load)"
   
@@ -103,7 +103,7 @@ resource "databricks_schema" "bronze" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "silver" {
-  catalog_name = databricks_catalog.mco_catalog.name
+  catalog_name = data.databricks_catalog.mco_catalog.name
   name         = var.silver_schema
   comment      = "Camada Prata: Dados limpos, validados e desduplicados (ELT - Transform)"
   
@@ -125,7 +125,7 @@ resource "databricks_schema" "silver" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "gold" {
-  catalog_name = databricks_catalog.mco_catalog.name
+  catalog_name = data.databricks_catalog.mco_catalog.name
   name         = var.gold_schema
   comment      = "Camada Ouro: Agregados de negócio e modelagem dimensional (Star Schema)"
   
@@ -182,7 +182,7 @@ resource "databricks_cluster" "bronze_cluster" {
   
   # Environment variables
   spark_env_vars = {
-    CATALOG_NAME               = databricks_catalog.mco_catalog.name
+    CATALOG_NAME               = data.databricks_catalog.mco_catalog.name
     SCHEMA_NAME                = databricks_schema.bronze.name
     LAYER                      = "bronze"
     ENVIRONMENT                = var.environment
@@ -238,7 +238,7 @@ resource "databricks_cluster" "silver_cluster" {
   }
   
   spark_env_vars = {
-    CATALOG_NAME               = databricks_catalog.mco_catalog.name
+    CATALOG_NAME               = data.databricks_catalog.mco_catalog.name
     SCHEMA_NAME                = databricks_schema.silver.name
     LAYER                      = "silver"
     ENVIRONMENT                = var.environment
@@ -293,7 +293,7 @@ resource "databricks_cluster" "gold_cluster" {
   }
   
   spark_env_vars = {
-    CATALOG_NAME               = databricks_catalog.mco_catalog.name
+    CATALOG_NAME               = data.databricks_catalog.mco_catalog.name
     SCHEMA_NAME                = databricks_schema.gold.name
     LAYER                      = "gold"
     ENVIRONMENT                = var.environment
@@ -322,7 +322,7 @@ resource "databricks_cluster" "gold_cluster" {
 
 # Grant read access to all schemas for data analysts
 resource "databricks_grants" "catalog_grants" {
-  catalog = databricks_catalog.mco_catalog.name
+  catalog = data.databricks_catalog.mco_catalog.name
   
   grant {
     principal  = "account users"
@@ -332,7 +332,7 @@ resource "databricks_grants" "catalog_grants" {
 
 # Bronze schema: Only data engineers can write
 resource "databricks_grants" "bronze_schema_grants" {
-  schema = "${databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
+  schema = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.bronze.name}"
   
   grant {
     principal  = "data-engineers"
@@ -342,7 +342,7 @@ resource "databricks_grants" "bronze_schema_grants" {
 
 # Silver schema: Data engineers can write
 resource "databricks_grants" "silver_schema_grants" {
-  schema = "${databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
+  schema = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.silver.name}"
   
   grant {
     principal  = "data-engineers"
@@ -352,7 +352,7 @@ resource "databricks_grants" "silver_schema_grants" {
 
 # Gold schema: Data engineers and analysts can read
 resource "databricks_grants" "gold_schema_grants" {
-  schema = "${databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
+  schema = "${data.databricks_catalog.mco_catalog.name}.${databricks_schema.gold.name}"
   
   grant {
     principal  = "data-engineers"
