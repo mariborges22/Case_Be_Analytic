@@ -205,9 +205,9 @@ resource "databricks_cluster" "bronze_cluster" {
   spark_conf = {
     "fs.azure.account.auth.type"                                = "OAuth"
     "fs.azure.account.oauth.provider.type"                      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-    "fs.azure.account.oauth2.client.id"                         = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_id.key}}}"
-    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_secret.key}}}"
-    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
+    "fs.azure.account.oauth2.client.id"                         = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_id.key}}}"
+    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_secret.key}}}"
+    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
 
     # Delta Lake optimizations
     "spark.databricks.delta.preview.enabled"           = "true"
@@ -280,9 +280,9 @@ resource "databricks_cluster" "silver_cluster" {
   spark_conf = {
     "fs.azure.account.auth.type"                                = "OAuth"
     "fs.azure.account.oauth.provider.type"                      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-    "fs.azure.account.oauth2.client.id"                         = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_id.key}}}"
-    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_secret.key}}}"
-    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
+    "fs.azure.account.oauth2.client.id"                         = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_id.key}}}"
+    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_secret.key}}}"
+    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
 
     # Delta Lake optimizations
     "spark.databricks.delta.preview.enabled"           = "true"
@@ -352,9 +352,9 @@ resource "databricks_cluster" "gold_cluster" {
   spark_conf = {
     "fs.azure.account.auth.type"                                = "OAuth"
     "fs.azure.account.oauth.provider.type"                      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-    "fs.azure.account.oauth2.client.id"                         = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_id.key}}}"
-    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_client_secret.key}}}"
-    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/${databricks_secret_scope.azure_credentials.name}/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
+    "fs.azure.account.oauth2.client.id"                         = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_id.key}}}"
+    "fs.azure.account.oauth2.client.secret"                     = "{{secrets/azure-storage-scope/${databricks_secret.azure_client_secret.key}}}"
+    "fs.azure.account.oauth2.client.endpoint"                   = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/${databricks_secret.azure_tenant_id.key}}}/oauth2/token"
 
     # Delta Lake optimizations
     "spark.databricks.delta.preview.enabled"           = "true"
