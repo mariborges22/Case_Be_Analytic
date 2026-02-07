@@ -47,28 +47,33 @@ provider "databricks" {
 #   ]
 # }
 
-resource "databricks_catalog" "mco_catalog" {
-  name       = var.catalog_name
-  # storage_root = var.databricks_storage_root # Using Metastore Default Storage
-  comment    = "MCO Catalog - Arquitetura Medalhão para dados de Mobilidade e Cidadania Operacional de Belo Horizonte"
+# resource "databricks_catalog" "mco_catalog" {
+#   name       = var.catalog_name
+#   # storage_root = var.databricks_storage_root # Using Metastore Default Storage
+#   comment    = "MCO Catalog - Arquitetura Medalhão para dados de Mobilidade e Cidadania Operacional de Belo Horizonte"
   
-  properties = {
-    environment  = var.environment
-    project      = var.project_name
-    owner        = var.owner
-    cost_center  = var.cost_center
-    architecture = "medallion"
-    data_source  = "mco_belo_horizonte"
-  }
+#   properties = {
+#     environment  = var.environment
+#     project      = var.project_name
+#     owner        = var.owner
+#     cost_center  = var.cost_center
+#     architecture = "medallion"
+#     data_source  = "mco_belo_horizonte"
+#   }
   
-  # depends_on = [
-  #   databricks_external_location.mco_location
-  # ]
+#   # depends_on = [
+#   #   databricks_external_location.mco_location
+#   # ]
   
-  # CRITICAL: Prevent accidental deletion of the entire catalog
-  lifecycle {
-    prevent_destroy = true
-  }
+#   # CRITICAL: Prevent accidental deletion of the entire catalog
+#   lifecycle {
+#     prevent_destroy = true
+#   }
+# }
+
+# Workaround: Use existing catalog created manually in UI to bypass Storage Root permission issues
+data "databricks_catalog" "mco_catalog" {
+  name = var.catalog_name
 }
 
 # ----------------------------------------------------------------------------
