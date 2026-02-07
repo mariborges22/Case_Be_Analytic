@@ -152,7 +152,7 @@ variable "cluster_max_workers" {
 variable "data_security_mode" {
   description = "Cluster data security mode for Unity Catalog"
   type        = string
-  default     = "USER_ISOLATION"
+  default     = "SINGLE_USER"
   
   validation {
     condition     = contains(["USER_ISOLATION", "SINGLE_USER"], var.data_security_mode)

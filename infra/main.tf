@@ -196,11 +196,9 @@ resource "databricks_cluster" "bronze_cluster" {
   data_security_mode = var.data_security_mode
 
   aws_attributes {
-    availability           = "SPOT_WITH_FALLBACK"
-    first_on_demand        = 1
-    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
-    ebs_volume_count       = 1
-    ebs_volume_size        = 32
+    availability    = "ON_DEMAND"
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
   }
   
   spark_conf = {
