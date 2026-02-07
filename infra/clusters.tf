@@ -14,12 +14,10 @@ resource "databricks_cluster" "bronze_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = "SINGLE_USER"
-  single_user_name   = var.owner
+  data_security_mode = "USER_ISOLATION"
 
   aws_attributes {
     availability = "ON_DEMAND"
-    zone_id      = "auto"
   }
   
   spark_conf = {
@@ -71,12 +69,10 @@ resource "databricks_cluster" "silver_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = "SINGLE_USER"
-  single_user_name   = var.owner
+  data_security_mode = "USER_ISOLATION"
 
   aws_attributes {
     availability = "ON_DEMAND"
-    zone_id      = "auto"
   }
   
   spark_conf = {
@@ -129,12 +125,10 @@ resource "databricks_cluster" "gold_cluster" {
   }
   
   runtime_engine     = var.enable_photon ? "PHOTON" : "STANDARD"
-  data_security_mode = "SINGLE_USER"
-  single_user_name   = var.owner
+  data_security_mode = "USER_ISOLATION"
 
   aws_attributes {
     availability = "ON_DEMAND"
-    zone_id      = "auto"
   }
   
   spark_conf = {

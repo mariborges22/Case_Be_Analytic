@@ -4,10 +4,33 @@
 
 resource "databricks_job" "mco_pipeline" {
   name = "MCO-Medallion-Pipeline"
+
+  # Common cluster configuration for all tasks
+  # This makes each task independent and easier to debug
   
   task {
     task_key = "bronze_extraction"
-    existing_cluster_id = databricks_cluster.bronze_cluster.id
+    
+    new_cluster {
+      num_workers   = 1 # Job Clusters can be fixed size for predictable cost
+      spark_version = var.cluster_spark_version
+      node_type_id  = "i3.xlarge"
+      
+      runtime_engine     = "STANDARD"
+      data_security_mode = "USER_ISOLATION"
+
+      aws_attributes {
+        availability = "ON_DEMAND"
+      }
+
+      spark_conf = {
+        "fs.azure.account.auth.type"                = "OAuth"
+        "fs.azure.account.oauth.provider.type"      = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id"         = "{{secrets/azure-storage-scope/azure-client-id}}"
+        "fs.azure.account.oauth2.client.secret"     = "{{secrets/azure-storage-scope/azure-client-secret}}"
+        "fs.azure.account.oauth2.client.endpoint"   = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/azure-tenant-id}}/oauth2/token"
+      }
+    }
     
     spark_python_task {
       python_file = "scraping/mco_extractor.py"
@@ -28,7 +51,27 @@ resource "databricks_job" "mco_pipeline" {
   task {
     task_key = "silver_refinement"
     depends_on { task_key = "bronze_extraction" }
-    existing_cluster_id = databricks_cluster.silver_cluster.id
+    
+    new_cluster {
+      num_workers   = 1
+      spark_version = var.cluster_spark_version
+      node_type_id  = "i3.xlarge"
+      
+      runtime_engine     = "STANDARD"
+      data_security_mode = "USER_ISOLATION"
+
+      aws_attributes {
+        availability = "ON_DEMAND"
+      }
+
+      spark_conf = {
+        "fs.azure.account.auth.type"            = "OAuth"
+        "fs.azure.account.oauth.provider.type"  = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id"     = "{{secrets/azure-storage-scope/azure-client-id}}"
+        "fs.azure.account.oauth2.client.secret" = "{{secrets/azure-storage-scope/azure-client-secret}}"
+        "fs.azure.account.oauth2.client.endpoint" = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/azure-tenant-id}}/oauth2/token"
+      }
+    }
     
     spark_python_task {
       python_file = "pipelines/silver_refinement.py"
@@ -42,7 +85,27 @@ resource "databricks_job" "mco_pipeline" {
   task {
     task_key = "gold_aggregations"
     depends_on { task_key = "silver_refinement" }
-    existing_cluster_id = databricks_cluster.gold_cluster.id
+    
+    new_cluster {
+      num_workers   = 1
+      spark_version = var.cluster_spark_version
+      node_type_id  = "i3.xlarge"
+      
+      runtime_engine     = "STANDARD"
+      data_security_mode = "USER_ISOLATION"
+
+      aws_attributes {
+        availability = "ON_DEMAND"
+      }
+
+      spark_conf = {
+        "fs.azure.account.auth.type"            = "OAuth"
+        "fs.azure.account.oauth.provider.type"  = "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id"     = "{{secrets/azure-storage-scope/azure-client-id}}"
+        "fs.azure.account.oauth2.client.secret" = "{{secrets/azure-storage-scope/azure-client-secret}}"
+        "fs.azure.account.oauth2.client.endpoint" = "https://login.microsoftonline.com/{{secrets/azure-storage-scope/azure-tenant-id}}/oauth2/token"
+      }
+    }
     
     spark_python_task {
       python_file = "pipelines/gold_aggregations.py"
