@@ -21,7 +21,6 @@ resource "databricks_cluster" "bronze_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
-    instance_profile_arn   = aws_iam_instance_profile.databricks_s3.arn
     
     ebs_volume_count = 1
     ebs_volume_size  = 32
@@ -52,7 +51,6 @@ resource "databricks_cluster" "silver_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
-    instance_profile_arn   = aws_iam_instance_profile.databricks_s3.arn
 
     ebs_volume_count = 1
     ebs_volume_size  = 32
@@ -83,7 +81,6 @@ resource "databricks_cluster" "gold_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
-    instance_profile_arn   = aws_iam_instance_profile.databricks_s3.arn
 
     ebs_volume_count = 1
     ebs_volume_size  = 32
