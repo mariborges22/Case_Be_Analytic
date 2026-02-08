@@ -31,7 +31,9 @@ resource "aws_s3_bucket_policy" "databricks_data_policy" {
     Statement = [
       {
         Effect = "Allow"
+        Principal = {
           AWS = aws_iam_role.databricks_s3_access.arn
+        }
         Action = [
           "s3:GetObject",
           "s3:PutObject",

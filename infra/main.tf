@@ -5,11 +5,10 @@ resource "databricks_cluster" "bronze_cluster" {
   node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
-   num_workers             = 0 
-  
+  num_workers             = 0
+
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
-   
   }
 
   custom_tags = {
@@ -21,10 +20,9 @@ resource "databricks_cluster" "bronze_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
-    
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    ebs_volume_count       = 1
+    ebs_volume_size        = 32
+    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
   }
 }
 
@@ -35,11 +33,10 @@ resource "databricks_cluster" "silver_cluster" {
   node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
-   num_workers             = 0 
-  
+  num_workers             = 0
+
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
-    
   }
 
   custom_tags = {
@@ -51,10 +48,9 @@ resource "databricks_cluster" "silver_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
-
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    ebs_volume_count       = 1
+    ebs_volume_size        = 32
+    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
   }
 }
 
@@ -65,11 +61,10 @@ resource "databricks_cluster" "gold_cluster" {
   node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
-   num_workers             = 0 
-  
+  num_workers             = 0
+
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
-  
   }
 
   custom_tags = {
@@ -81,9 +76,8 @@ resource "databricks_cluster" "gold_cluster" {
     zone_id                = "auto"
     first_on_demand        = 1
     spot_bid_price_percent = 100
-
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+    ebs_volume_count       = 1
+    ebs_volume_size        = 32
+    ebs_volume_type        = "GENERAL_PURPOSE_SSD"
   }
 }

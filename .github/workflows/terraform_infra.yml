@@ -96,49 +96,13 @@ jobs:
         run: terraform validate -no-color
 
 
-      - name: Terraform Import S3 Bucket (Temporary)
+      - name: Clean Legacy Storage Credential State
         run: |
-          if terraform state list | grep -q "aws_s3_bucket.databricks_data"; then
-            echo "Bucket already imported."
-          else
-            terraform import aws_s3_bucket.databricks_data databricks-mco-lakehouse || echo "Import failed or already exists"
-          fi
-        continue-on-error: true
+          terraform state rm databricks_storage_credential.s3_credential || true
+          terraform state rm databricks_storage_credential.s3_storage_credential || true
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-
-          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
-
-      - name: Terraform Import Storage Credential
-        run: |
-          if terraform state list | grep -q "databricks_storage_credential.s3_credential"; then
-            echo "Storage Credential already imported."
-          else
-            terraform import databricks_storage_credential.s3_credential databricks-s3-ingest-9b92b-credential || echo "Import failed or already exists"
-          fi
-        continue-on-error: true
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-
-          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
-
-      - name: Terraform Import External Locations
-        run: |
-          for location in bronze silver gold; do
-            if terraform state list | grep -q "databricks_external_location.$location"; then
-              echo "External Location $location already imported."
-            else
-              terraform import databricks_external_location.$location $location-location || echo "Import failed for $location"
-            fi
-          done
-        continue-on-error: true
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-
-          TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
 
       - name: Terraform Plan
         id: plan
