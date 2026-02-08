@@ -77,11 +77,15 @@ def extract_mco_data(
     )
 
     # Salva como Delta Table (formato nativo do Databricks)
+    # CRITICAL: Escreve DIRETAMENTE no bucket S3 via Unity Catalog External Location
     full_table_name = f"{catalog_name}.{schema_name}.{table_name}"
+    s3_path = f"s3://databricks-mco-lakehouse/bronze/{table_name}"
+
+    print(f"[BRONZE] Salvando em: {full_table_name} (Path: {s3_path})")
 
     df_bronze.write.mode("overwrite").format("delta").option(
         "overwriteSchema", "true"
-    ).option("delta.enableChangeDataFeed", "true").saveAsTable(full_table_name)
+    ).option("delta.enableChangeDataFeed", "true").option("path", s3_path).saveAsTable(full_table_name)
 
     record_count = df_bronze.count()
     print(f"[BRONZE] ✓ {record_count} registros salvos em {full_table_name}")

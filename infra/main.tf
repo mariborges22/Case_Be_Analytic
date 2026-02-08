@@ -22,6 +22,10 @@ resource "databricks_cluster" "bronze_cluster" {
     first_on_demand        = 1
     spot_bid_price_percent = 100
     instance_profile_arn   = databricks_instance_profile.s3_access.id
+    
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 }
 
@@ -49,6 +53,10 @@ resource "databricks_cluster" "silver_cluster" {
     first_on_demand        = 1
     spot_bid_price_percent = 100
     instance_profile_arn   = databricks_instance_profile.s3_access.id
+
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 }
 
@@ -76,5 +84,9 @@ resource "databricks_cluster" "gold_cluster" {
     first_on_demand        = 1
     spot_bid_price_percent = 100
     instance_profile_arn   = databricks_instance_profile.s3_access.id
+
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 }
