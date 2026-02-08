@@ -5,11 +5,11 @@ resource "databricks_cluster" "bronze_cluster" {
   node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
+   num_workers             = 0 
   
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
-    "spark.databricks.cluster.profile"       = "singleNode"
-    "spark.master"                           = "local[*]"
+   
   }
 
   custom_tags = {
@@ -35,11 +35,11 @@ resource "databricks_cluster" "silver_cluster" {
   node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
+   num_workers             = 0 
   
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
-    "spark.databricks.cluster.profile"       = "singleNode"
-    "spark.master"                           = "local[*]"
+    
   }
 
   custom_tags = {
@@ -65,11 +65,11 @@ resource "databricks_cluster" "gold_cluster" {
   node_type_id            = "m5.large"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
+   num_workers             = 0 
   
   spark_conf = {
     "spark.databricks.delta.preview.enabled" = "true"
-    "spark.databricks.cluster.profile"       = "singleNode"
-    "spark.master"                           = "local[*]"
+  
   }
 
   custom_tags = {
