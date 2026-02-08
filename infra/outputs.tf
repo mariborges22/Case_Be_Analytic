@@ -19,10 +19,3 @@ output "external_locations" {
   }
 }
 
-output "clusters" {
-  value = {
-    bronze = databricks_cluster.bronze_cluster.id
-    silver = databricks_cluster.silver_cluster.id
-    gold   = databricks_cluster.gold_cluster.id
-  }
-}
