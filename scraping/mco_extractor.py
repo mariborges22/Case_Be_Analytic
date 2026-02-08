@@ -85,7 +85,9 @@ def extract_mco_data(
 
     df_bronze.write.mode("overwrite").format("delta").option(
         "overwriteSchema", "true"
-    ).option("delta.enableChangeDataFeed", "true").option("path", s3_path).saveAsTable(full_table_name)
+    ).option("delta.enableChangeDataFeed", "true").option("path", s3_path).saveAsTable(
+        full_table_name
+    )
 
     record_count = df_bronze.count()
     print(f"[BRONZE] ✓ {record_count} registros salvos em {full_table_name}")
