@@ -22,16 +22,12 @@ resource "databricks_cluster" "bronze_cluster" {
 
   aws_attributes {
     availability           = "SPOT_WITH_FALLBACK"
-    zone_id                = "us-east-1a"
+    zone_id                = "us-east-2a"
     first_on_demand        = 1
     spot_bid_price_percent = 100
     ebs_volume_count       = 1
     ebs_volume_size        = 32
     ebs_volume_type        = "GENERAL_PURPOSE_SSD"
-
-    subnet_id            = aws_subnet.databricks.id
-    security_groups      = [aws_security_group.databricks.id]
-    instance_profile_arn = aws_iam_instance_profile.databricks_s3_access.arn
   }
 }
 
@@ -55,16 +51,12 @@ resource "databricks_cluster" "silver_cluster" {
 
   aws_attributes {
     availability           = "SPOT_WITH_FALLBACK"
-    zone_id                = "us-east-1a"
+    zone_id                = "us-east-2a"
     first_on_demand        = 1
     spot_bid_price_percent = 100
     ebs_volume_count       = 1
     ebs_volume_size        = 32
     ebs_volume_type        = "GENERAL_PURPOSE_SSD"
-
-    subnet_id            = aws_subnet.databricks.id
-    security_groups      = [aws_security_group.databricks.id]
-    instance_profile_arn = aws_iam_instance_profile.databricks_s3_access.arn
   }
 }
 
@@ -88,15 +80,11 @@ resource "databricks_cluster" "gold_cluster" {
 
   aws_attributes {
     availability           = "SPOT_WITH_FALLBACK"
-    zone_id                = "us-east-1a"
+    zone_id                = "us-east-2a"
     first_on_demand        = 1
     spot_bid_price_percent = 100
     ebs_volume_count       = 1
     ebs_volume_size        = 32
     ebs_volume_type        = "GENERAL_PURPOSE_SSD"
-
-    subnet_id            = aws_subnet.databricks.id
-    security_groups      = [aws_security_group.databricks.id]
-    instance_profile_arn = aws_iam_instance_profile.databricks_s3_access.arn
   }
 }
