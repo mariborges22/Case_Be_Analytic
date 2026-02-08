@@ -10,8 +10,7 @@ data "databricks_catalog" "existing" {
 
 # Storage Credential existente (testar primeiro nome, se falhar usar o segundo)
 data "databricks_storage_credential" "s3_credential" {
-  name = "databricks-s3-ingest-9b92b-credential"
-  # Se der erro, trocar para: name = "databricks-s3-ingest-9b92b"
+  name = "s3-storage-credential"
 }
 
 # Current User (para owner dos recursos)

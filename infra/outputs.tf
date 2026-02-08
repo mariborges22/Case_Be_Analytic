@@ -11,6 +11,7 @@ output "schemas" {
 }
 
 output "external_locations" {
+  description = "External locations for S3 data access"
   value = {
     bronze = databricks_external_location.bronze.url
     silver = databricks_external_location.silver.url

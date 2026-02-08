@@ -28,7 +28,7 @@ variable "catalog_name" {
 variable "storage_credential_name" {
   description = "Name of the storage credential"
   type        = string
-  default     = "databricks-s3-ingest-9b92b-credential"
+  default     = "s3-storage-credential"
 }
 
 # ----------------------------------------------------------------------------
