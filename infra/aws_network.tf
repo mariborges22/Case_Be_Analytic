@@ -63,17 +63,19 @@ resource "aws_security_group" "databricks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow inbound from same SG
-  ingress {
-    from_port       = 0
-    to_port         = 65535
-    protocol        = "tcp"
-    security_groups = [aws_security_group.databricks.id]
-  }
-
   tags = {
     Name = "databricks-sg"
   }
+}
+
+# Adicione um bloco separado para permitir tráfego entre instâncias da mesma SG
+resource "aws_security_group_rule" "databricks_self" {
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 65535
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.databricks.id
+  source_security_group_id = aws_security_group.databricks.id
 }
 
 # Instance Profile para IAM Role
