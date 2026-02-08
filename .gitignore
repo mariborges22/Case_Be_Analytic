@@ -1,1 +1,8 @@
 *ia.json
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+*setup_aws_permissions.sh
+*check_missing_tests.sh
+*case_be_analytic_credentials.csv

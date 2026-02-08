@@ -35,6 +35,7 @@ resource "databricks_job" "mco_pipeline" {
         "--schema-name", var.bronze_schema
       ]
     }
+    existing_cluster_id = databricks_cluster.bronze_cluster.id
 
     environment_key = "default"
   }
@@ -51,6 +52,7 @@ resource "databricks_job" "mco_pipeline" {
         "--silver-table", "${var.catalog_name}.${var.silver_schema}.mco_clean"
       ]
     }
+    existing_cluster_id = databricks_cluster.silver_cluster.id
 
     environment_key = "default"
   }
@@ -67,6 +69,7 @@ resource "databricks_job" "mco_pipeline" {
         "--gold-table", "${var.catalog_name}.${var.gold_schema}.fact_passageiros"
       ]
     }
+    existing_cluster_id = databricks_cluster.gold_cluster.id
 
     environment_key = "default"
   }

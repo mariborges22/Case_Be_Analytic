@@ -1,24 +1,17 @@
 # ----------------------------------------------------------------------------
-# Unity Catalog - Main Catalog
+# Unity Catalog - Main Catalog (Existente)
 # ----------------------------------------------------------------------------
 
-resource "databricks_catalog" "mco_catalog" {
-  name         = var.catalog_name
-  storage_root = "s3://${aws_s3_bucket.databricks_data.id}/"
-  comment      = "Catálogo principal do Lakehouse MCO (Transporte e Mobilidade)"
-
-  properties = {
-    purpose = "analytics"
-  }
-}
+# Referência feita via data.databricks_catalog.existing em data_sources.tf
 
 # ----------------------------------------------------------------------------
 # Bronze Layer (Raw Data) - Immutable Ingestion
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "bronze" {
-  catalog_name = var.catalog_name
+  catalog_name = data.databricks_catalog.existing.name
   name         = var.bronze_schema
+  owner        = data.databricks_current_user.me.user_name
   comment      = "Camada Bronze: Dados brutos e imutáveis do MCO (ELT - Extract & Load)"
   
   properties = {
@@ -38,8 +31,9 @@ resource "databricks_schema" "bronze" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "silver" {
-  catalog_name = var.catalog_name
+  catalog_name = data.databricks_catalog.existing.name
   name         = var.silver_schema
+  owner        = data.databricks_current_user.me.user_name
   comment      = "Camada Prata: Dados limpos, validados e desduplicados (ELT - Transform)"
   
   properties = {
@@ -59,8 +53,9 @@ resource "databricks_schema" "silver" {
 # ----------------------------------------------------------------------------
 
 resource "databricks_schema" "gold" {
-  catalog_name = var.catalog_name
+  catalog_name = data.databricks_catalog.existing.name
   name         = var.gold_schema
+  owner        = data.databricks_current_user.me.user_name
   comment      = "Camada Ouro: Agregados de negócio e modelagem dimensional (Star Schema)"
   
   lifecycle {

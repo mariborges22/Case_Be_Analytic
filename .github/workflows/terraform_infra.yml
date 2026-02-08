@@ -88,7 +88,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
       - name: Terraform Validate
@@ -107,7 +107,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
 
       - name: Terraform Import Storage Credential
@@ -121,7 +121,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
 
       - name: Terraform Import External Locations
@@ -137,7 +137,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
 
       - name: Terraform Plan
@@ -151,7 +151,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
       - name: Save Terraform Plan
@@ -233,7 +233,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
       - name: Download Terraform Plan
@@ -247,7 +247,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
       - name: Terraform Output
@@ -320,5 +320,5 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}

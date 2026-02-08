@@ -150,14 +150,8 @@ resource "aws_iam_role_policy" "databricks_s3_policy" {
   })
 }
 
-# Instance Profile para anexar aos clusters
-resource "aws_iam_instance_profile" "databricks_s3" {
-  name = "databricks-s3-instance-profile"
-  role = aws_iam_role.databricks_s3_access.name
-}
-
-# Registrar Instance Profile no Databricks
-resource "databricks_instance_profile" "s3_access" {
-  instance_profile_arn = aws_iam_instance_profile.databricks_s3.arn
-  skip_validation      = true
-}
+# Registrar Instance Profile no Databricks - REMOVIDO (Uso de Unity Catalog)
+# resource "databricks_instance_profile" "s3_access" {
+#   instance_profile_arn = aws_iam_instance_profile.databricks_s3.arn
+#   skip_validation      = true
+# }

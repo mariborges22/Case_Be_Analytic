@@ -7,11 +7,7 @@
 # Databricks Connection
 # ----------------------------------------------------------------------------
 
-variable "databricks_host" {
-  description = "Databricks workspace URL"
-  type        = string
-  sensitive   = true
-}
+
 
 variable "databricks_account_id" {
   description = "Databricks account ID"
@@ -24,21 +20,15 @@ variable "databricks_account_id" {
 # ----------------------------------------------------------------------------
 
 variable "catalog_name" {
-  description = "Name of the Unity Catalog for MCO Lakehouse"
+  description = "Name of the Unity Catalog"
   type        = string
   default     = "mco_catalog"
 }
 
-variable "metastore_id" {
-  description = "Unity Catalog Metastore ID (if pre-existing)"
-  type        = string
-  default     = ""
-}
-
 variable "storage_credential_name" {
-  description = "Name of the storage credential for external locations"
+  description = "Name of the storage credential"
   type        = string
-  default     = "sus_storage_credential"
+  default     = "databricks-s3-ingest-9b92b-credential"
 }
 
 # ----------------------------------------------------------------------------

@@ -18,10 +18,15 @@ provider "aws" {
 }
 
 provider "databricks" {
-  # Configured via env vars:
-  # Configured via env vars:
-  # DATABRICKS_HOST
-  # DATABRICKS_TOKEN
+  # Workspace-level provider
+  # Configured via env vars: DATABRICKS_HOST, DATABRICKS_TOKEN
+}
+
+provider "databricks" {
+  alias      = "account"
+  host       = "https://accounts.cloud.databricks.com"
+  account_id = var.databricks_account_id
+  # Authentication via env vars or ~/.databrickscfg
 }
 
 data "databricks_spark_version" "latest_lts" {
