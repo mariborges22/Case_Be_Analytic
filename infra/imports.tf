@@ -1,36 +1,28 @@
+# imports.tf - VERSÃO LIMPA
 # ============================================================================
-# Terraform Import Blocks (Automated Adoption)
-# Use these to import existing resources into the state without local CLI.
+# Imports apenas para recursos que REALMENTE vamos gerenciar via Terraform
 # ============================================================================
 
-
-
-# Unity Catalog Schemas
+# Importar S3 bucket se já existir
 import {
-  to = databricks_schema.bronze
-  id = "mco_catalog.bronze"
+  id = "databricks-mco-lakehouse"
+  to = aws_s3_bucket.databricks_data
 }
 
-import {
-  to = databricks_schema.silver
-  id = "mco_catalog.silver"
-}
+# Importar external locations APENAS se já existirem
+# Se não existirem, comentar estes blocos:
 
-import {
-  to = databricks_schema.gold
-  id = "mco_catalog.gold"
-}
-
-# IAM Resources
-
-
-import {
-  to = aws_iam_instance_profile.databricks_s3
-  id = "databricks-s3-instance-profile"
-}
-
-# Unity Catalog Resources
-import {
-  to = databricks_storage_credential.s3_credential
-  id = "s3-storage-credential"
-}
+# import {
+#   id = "bronze-location"
+#   to = databricks_external_location.bronze
+# }
+# 
+# import {
+#   id = "silver-location"
+#   to = databricks_external_location.silver
+# }
+# 
+# import {
+#   id = "gold-location"
+#   to = databricks_external_location.gold
+# }
