@@ -1,4 +1,8 @@
-# Bronze Cluster
+# ============================================================================
+# Databricks Clusters - Medallion Architecture
+# ============================================================================
+
+# Bronze Cluster - Single Node
 resource "databricks_cluster" "bronze_cluster" {
   cluster_name            = "bronze-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
@@ -13,6 +17,7 @@ resource "databricks_cluster" "bronze_cluster" {
 
   custom_tags = {
     "ResourceClass" = "SingleNode"
+    "Layer"         = "Bronze"
   }
 
   aws_attributes {
@@ -26,7 +31,7 @@ resource "databricks_cluster" "bronze_cluster" {
   }
 }
 
-# Silver Cluster
+# Silver Cluster - Single Node
 resource "databricks_cluster" "silver_cluster" {
   cluster_name            = "silver-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
@@ -41,6 +46,7 @@ resource "databricks_cluster" "silver_cluster" {
 
   custom_tags = {
     "ResourceClass" = "SingleNode"
+    "Layer"         = "Silver"
   }
 
   aws_attributes {
@@ -54,7 +60,7 @@ resource "databricks_cluster" "silver_cluster" {
   }
 }
 
-# Gold Cluster
+# Gold Cluster - Single Node
 resource "databricks_cluster" "gold_cluster" {
   cluster_name            = "gold-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
@@ -69,6 +75,7 @@ resource "databricks_cluster" "gold_cluster" {
 
   custom_tags = {
     "ResourceClass" = "SingleNode"
+    "Layer"         = "Gold"
   }
 
   aws_attributes {
