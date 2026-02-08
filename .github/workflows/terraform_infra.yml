@@ -91,12 +91,6 @@ jobs:
 
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
 
-      - name: Force Unlock Terraform State (Temporary)
-        run: terraform force-unlock -force 9213179b-5033-afc3-ca76-9bd2ca5814e4
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
