@@ -10,6 +10,11 @@ import {
 }
 
 # Importar external locations APENAS se já existirem
+import {
+  id = "db_s3_external_databricks-s3-ingest-9b92b"
+  to = databricks_external_location.bronze
+}
+
 # Se não existirem, comentar estes blocos:
 
 # import {

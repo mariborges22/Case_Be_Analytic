@@ -8,8 +8,8 @@ data "databricks_catalog" "existing" {
   name = var.catalog_name
 }
 
-# Storage Credential existente (testar primeiro nome, se falhar usar o segundo)
-data "databricks_storage_credential" "s3_credential" {
+# Storage Credential existente
+data "databricks_storage_credential" "s3_storage_credential" {
   name = "s3-storage-credential"
 }
 
