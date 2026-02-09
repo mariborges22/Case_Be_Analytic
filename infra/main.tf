@@ -5,7 +5,7 @@
 resource "databricks_cluster" "processing_cluster" {
   cluster_name            = "mco-processing-cluster"
   spark_version           = data.databricks_spark_version.latest_lts.id
-  node_type_id            = "m5.large"
+  node_type_id            = "i3.xlarge"
   data_security_mode      = "SINGLE_USER"
   autotermination_minutes = 20
   num_workers             = 0
@@ -17,12 +17,6 @@ resource "databricks_cluster" "processing_cluster" {
   custom_tags = {
     "ResourceClass" = "SingleNode"
     "Layer"         = "Unified"
-  }
-
-  aws_attributes {
-    ebs_volume_count = 1
-    ebs_volume_size  = 32
-    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
   }
 }
 
