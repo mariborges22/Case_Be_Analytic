@@ -28,8 +28,6 @@ resource "databricks_cluster" "processing_cluster" {
     ebs_volume_size        = 32
     ebs_volume_type        = "GENERAL_PURPOSE_SSD"
 
-    subnet_id            = aws_subnet.databricks.id
-    security_groups      = [aws_security_group.databricks.id]
     instance_profile_arn = aws_iam_instance_profile.databricks_s3_access.arn
   }
 }
