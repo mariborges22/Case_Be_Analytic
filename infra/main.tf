@@ -18,6 +18,12 @@ resource "databricks_cluster" "processing_cluster" {
     "ResourceClass" = "SingleNode"
     "Layer"         = "Unified"
   }
+
+  aws_attributes {
+    ebs_volume_count = 1
+    ebs_volume_size  = 32
+    ebs_volume_type  = "GENERAL_PURPOSE_SSD"
+  }
 }
 
 # Output do cluster ID para depois
