@@ -86,8 +86,8 @@ jobs:
         run: |
           terraform init -input=false -upgrade
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
 
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
 
@@ -97,8 +97,8 @@ jobs:
           terraform state rm databricks_cluster.silver_cluster || true
           terraform state rm databricks_cluster.gold_cluster || true
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
       
       - name: Terraform Validate
         id: validate
@@ -110,8 +110,8 @@ jobs:
           terraform state rm databricks_storage_credential.s3_credential || true
           terraform state rm databricks_storage_credential.s3_storage_credential || true
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
 
       - name: Terraform Plan
         id: plan
@@ -123,8 +123,8 @@ jobs:
             -input=false \
             -lock=false
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
 
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
@@ -205,8 +205,8 @@ jobs:
       - name: Terraform Init
         run: terraform init -input=false
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
 
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
@@ -219,8 +219,8 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -lock=false tfplan
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
 
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
@@ -280,8 +280,8 @@ jobs:
       - name: Terraform Init
         run: terraform init -input=false
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
           TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
       
@@ -293,7 +293,7 @@ jobs:
             -input=false \
             -lock=false
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          TF_VAR_databricks_host: ${{ secrets.DATABRICKS_HOST }}
+          TF_VAR_databricks_token: ${{ secrets.DATABRICKS_TOKEN }}
 
           TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}

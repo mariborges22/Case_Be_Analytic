@@ -7,8 +7,16 @@
 # Databricks Connection
 # ----------------------------------------------------------------------------
 
+variable "databricks_host" {
+  description = "Databricks host"
+  type        = string
+}
 
-
+variable "databricks_token" {
+  description = "Databricks token"
+  type        = string
+  sensitive   = true
+}
 variable "databricks_account_id" {
   description = "Databricks account ID"
   type        = string
