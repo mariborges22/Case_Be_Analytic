@@ -33,8 +33,6 @@ provider "databricks" {
   token      = var.databricks_token
 }
 
-data "aws_caller_identity" "current" {}
-
 data "databricks_spark_version" "latest_lts" {
   long_term_support = true
 }
