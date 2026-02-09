@@ -10,7 +10,7 @@ resource "aws_s3_bucket_versioning" "databricks_data" {
 }
 
 resource "aws_s3_bucket" "databricks_data" {
-  bucket = "databricks-mco-lakehouse"
+  bucket = "databricks-mco-lakehouse-v2"
   
   tags = {
     Environment = "production"

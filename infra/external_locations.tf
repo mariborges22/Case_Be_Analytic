@@ -4,7 +4,7 @@
 
 resource "databricks_external_location" "bronze" {
   name            = "db_s3_external_databricks-s3-ingest-9b92b"
-  url             = "s3://databricks-mco-lakehouse/bronze"
+  url             = "s3://databricks-mco-lakehouse-v2/bronze"
   credential_name = data.databricks_storage_credential.s3_storage_credential.name
   comment         = "Bronze layer - raw, immutable data from MCO"
 

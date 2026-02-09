@@ -4,10 +4,12 @@
 # ============================================================================
 
 # Importar S3 bucket se já existir
+/*
 import {
   id = "databricks-mco-lakehouse"
   to = aws_s3_bucket.databricks_data
 }
+*/
 
 # Importar external locations APENAS se já existirem
 import {
