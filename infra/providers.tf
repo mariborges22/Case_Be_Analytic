@@ -13,21 +13,27 @@ terraform {
   }
 }
 
+# Provider AWS (us-east-2 - mesma região do Databricks)
 provider "aws" {
   region = "us-east-2"
+
+  default_tags {
+    tags = {
+      Environment = var.environment
+      Project     = var.project_name
+      ManagedBy   = "Terraform"
+      Owner       = var.owner
+    }
+  }
 }
 
+# Provider Databricks (us-east-2)
 provider "databricks" {
-  # Workspace-level provider
-  # Configured via env vars: DATABRICKS_HOST, DATABRICKS_TOKEN
+  host       = var.databricks_host
+  token      = var.databricks_token
 }
 
-provider "databricks" {
-  alias      = "account"
-  host       = "https://accounts.cloud.databricks.com"
-  account_id = var.databricks_account_id
-  # Authentication via env vars or ~/.databrickscfg
-}
+data "aws_caller_identity" "current" {}
 
 data "databricks_spark_version" "latest_lts" {
   long_term_support = true

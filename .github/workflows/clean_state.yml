@@ -1,0 +1,58 @@
+name: Terraform State Cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to clean'
+        required: true
+        default: 'dev'
+
+env:
+  WORKING_DIR: ./infra
+  TF_LOG: INFO
+
+jobs:
+  terraform-state-cleanup:
+    name: State Cleanup
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -lock=false
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Remove resources from state
+        run: |
+          terraform state rm -lock=false 'aws_s3_bucket.databricks_data' || true
+          terraform state rm -lock=false 'aws_s3_bucket_versioning.databricks_data' || true
+          terraform state rm -lock=false 'aws_s3_bucket_policy.databricks_data_policy' || true
+          terraform state rm -lock=false 'aws_s3_bucket_server_side_encryption_configuration.databricks_data' || true
+          terraform state rm -lock=false 'aws_s3_bucket_public_access_block.databricks_data' || true
+          terraform state rm -lock=false 'aws_iam_role.databricks_s3_access' || true
+          terraform state rm -lock=false 'aws_iam_role_policy.databricks_s3_policy' || true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
