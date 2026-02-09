@@ -120,7 +120,8 @@ jobs:
             -var="environment=${{ github.event.inputs.environment || 'dev' }}" \
             -out=tfplan \
             -no-color \
-            -input=false
+            -input=false \
+            -lock=false
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
@@ -216,7 +217,7 @@ jobs:
           path: ${{ env.WORKING_DIR }}
       
       - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false tfplan
+        run: terraform apply -auto-approve -input=false -lock=false tfplan
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
@@ -289,7 +290,8 @@ jobs:
           terraform destroy \
             -var="environment=${{ github.event.inputs.environment }}" \
             -auto-approve \
-            -input=false
+            -input=false \
+            -lock=false
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
